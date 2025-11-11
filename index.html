@@ -84,15 +84,23 @@ aside {
   background: #fff7f0;
   border: 2px solid var(--laranja);
   border-radius: 12px;
-  padding: 15px;
+  padding: 0;
   max-height: 100%;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
-aside h3 {
+aside .bioHeader {
+  background: linear-gradient(90deg, var(--vermelho), var(--laranja));
+  color: white;
   text-align: center;
-  color: var(--vermelho);
-  margin-bottom: 10px;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+aside .bioContent {
+  padding: 15px;
 }
 
 aside img {
@@ -111,7 +119,7 @@ aside p {
 .carousel {
   display: flex;
   overflow-x: auto;
-  gap: 14px;
+  gap: 16px;
   padding: 10px 0;
   scroll-behavior: smooth;
 }
@@ -126,7 +134,7 @@ aside p {
 }
 
 .carousel img {
-  height: 230px;
+  height: 260px; /* aumentei o tamanho */
   flex-shrink: 0;
   border-radius: 10px;
   border: 2px solid var(--laranja);
@@ -134,7 +142,7 @@ aside p {
 }
 
 .carousel img:hover {
-  transform: scale(1.06);
+  transform: scale(1.08);
 }
 
 /* ===== VÍDEOS ===== */
@@ -206,7 +214,7 @@ footer {
   }
 
   .carousel img {
-    height: 180px;
+    height: 200px;
   }
 }
 </style>
@@ -276,13 +284,15 @@ footer {
 
   <!-- ===== BIOGRAFIA LATERAL ===== -->
   <aside>
-    <h3>👦 Biografia de Rayyan Arkan Dikha</h3>
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lQJpIj8MEVgbM9f0X_nng2U3VrN02s5cZw&s" alt="Rayyan Arkan Dikha">
-    <p><strong>Nome:</strong> Rayyan Arkan Dikha</p>
-    <p><strong>Idade:</strong> 9 anos</p>
-    <p><strong>Origem:</strong> Riau, Indonésia</p>
-    <p><strong>Curiosidade:</strong> Rayyan ficou conhecido por sua energia e espontaneidade no <strong>Festival Pacu Jalur</strong>, transformando um simples momento em um fenômeno global.</p>
-    <p>Hoje, é considerado um símbolo de alegria cultural da Indonésia, inspirando memes, músicas e até jogos no Roblox.</p>
+    <div class="bioHeader">👦 Biografia de Rayyan Arkan Dikha</div>
+    <div class="bioContent">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lQJpIj8MEVgbM9f0X_nng2U3VrN02s5cZw&s" alt="Rayyan Arkan Dikha">
+      <p><strong>Nome:</strong> Rayyan Arkan Dikha</p>
+      <p><strong>Idade:</strong> 9 anos</p>
+      <p><strong>Origem:</strong> Riau, Indonésia</p>
+      <p><strong>Curiosidade:</strong> Rayyan ficou conhecido por sua energia e espontaneidade no <strong>Festival Pacu Jalur</strong>, transformando um simples momento em um fenômeno global.</p>
+      <p>Hoje, é considerado um símbolo de alegria cultural da Indonésia, inspirando memes, músicas e até jogos no Roblox.</p>
+    </div>
   </aside>
 </main>
 
