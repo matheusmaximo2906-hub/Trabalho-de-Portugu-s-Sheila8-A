@@ -8,10 +8,11 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   font-family: "Segoe UI", Arial, sans-serif;
   background: #000;
   color: #fff;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* Fundo com emojis musicais 🎵 */
@@ -22,17 +23,18 @@ body {
 }
 
 .note {
-  position: absolute;
+  position: fixed;
   font-size: 2rem;
   opacity: 0;
   animation: floatNotes linear infinite;
   color: #f77f00;
+  z-index: 0;
 }
 
-#lyrics-container {
+main {
   position: relative;
   z-index: 2;
-  max-width: 800px;
+  max-width: 900px;
   margin: 60px auto;
   background: rgba(0, 0, 0, 0.6);
   padding: 25px;
@@ -41,10 +43,11 @@ body {
   backdrop-filter: blur(6px);
 }
 
+/* Letra da música */
 .lyric-line {
   cursor: pointer;
   margin: 8px 0;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   transition: color 0.3s, transform 0.3s;
 }
 .lyric-line:hover {
@@ -54,15 +57,41 @@ body {
 
 /* Tradução */
 .translation {
-  margin-top: 25px;
+  margin-top: 35px;
   font-size: 1rem;
   color: #ccc;
   text-align: justify;
-  max-width: 750px;
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.6;
 }
 
+/* Botões */
+.botoes {
+  margin-top: 40px;
+  text-align: center;
+}
+button, a.btn {
+  background: linear-gradient(90deg, #d62828, #f77f00);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  margin: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover, a.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(247,112,0,0.2);
+}
+
+/* Responsividade */
+@media (max-width: 700px) {
+  .lyric-line { font-size: 1.05rem; }
+  .translation { font-size: 0.95rem; }
+  main { margin: 30px 10px; padding: 15px; }
+}
 </style>
 </head>
 <body>
@@ -75,7 +104,7 @@ function createNotes() {
     note.classList.add('note');
     note.textContent = Math.random() > 0.5 ? '🎵' : '🎶';
     note.style.left = Math.random() * 100 + 'vw';
-    note.style.animationDuration = 6 + Math.random() * 5 + 's';
+    note.style.animationDuration = 6 + Math.random() * 6 + 's';
     note.style.animationDelay = Math.random() * 5 + 's';
     document.body.appendChild(note);
   }
@@ -83,9 +112,9 @@ function createNotes() {
 createNotes();
 </script>
 
-<!-- Letra -->
-<div id="lyrics-container">
+<main>
   <h2>🎧 Melly Mike — I'm Young, Black & Rich 🎧</h2>
+
   <div id="lyrics">
     <div class="lyric-line">Yeah, it all starts with you</div>
     <div class="lyric-line">Everything you ever wanted and everything you ever dreamed</div>
@@ -123,12 +152,14 @@ createNotes();
     Ninguém vai vir te salvar.  
     É você contra você.  
     Então, o quanto você realmente quer isso?</p>
+
     <p>Meu medidor social esgotou, então tô indo embora.  
     Só quero juntar minha grana, ficar de boa, só isso.  
     Ninguém ligava pra mim até eu ficar rico.  
     Tô tão animado que parece que vou bugar.  
     Mudei todo meu estilo de vida, cortei peso morto.  
     Agora todos sabem que eu tô voando alto.</p>
+
     <p>Sempre tivemos potencial, só estou colhendo minhas fichas.  
     Melly Mike é tipo o Steph Curry — não erra.  
     Não dou minha energia pra ninguém fora do meu grupo.  
@@ -136,7 +167,12 @@ createNotes();
     Eles não me parabenizam, mas ficam assistindo.  
     E eu nem fico bravo — sou jovem, negro e rico.</p>
   </div>
-</div>
+
+  <div class="botoes">
+    <a href="index.html" class="btn">⬅️ Voltar à Página Inicial</a>
+    <a href="pagina3.html" class="btn">➡️ Ir para Página 3</a>
+  </div>
+</main>
 
 <script>
 document.querySelectorAll('.lyric-line').forEach(line => {
