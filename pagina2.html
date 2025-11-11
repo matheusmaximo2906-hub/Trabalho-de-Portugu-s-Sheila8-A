@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Página 2 — Melly Mike: I'm Young, Black & Rich</title>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+/* Fundo com emojis musicais 🎵 */
+@keyframes floatNotes {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+.note {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0;
+  animation: floatNotes linear infinite;
+  color: #f77f00;
+}
+
+#lyrics-container {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 60px auto;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+.lyric-line {
+  cursor: pointer;
+  margin: 8px 0;
+  font-size: 1.2rem;
+  transition: color 0.3s, transform 0.3s;
+}
+.lyric-line:hover {
+  color: #f77f00;
+  transform: scale(1.05);
+}
+
+/* Tradução */
+.translation {
+  margin-top: 25px;
+  font-size: 1rem;
+  color: #ccc;
+  text-align: justify;
+  max-width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Fundo animado -->
+<script>
+function createNotes() {
+  for (let i = 0; i < 25; i++) {
+    const note = document.createElement('div');
+    note.classList.add('note');
+    note.textContent = Math.random() > 0.5 ? '🎵' : '🎶';
+    note.style.left = Math.random() * 100 + 'vw';
+    note.style.animationDuration = 6 + Math.random() * 5 + 's';
+    note.style.animationDelay = Math.random() * 5 + 's';
+    document.body.appendChild(note);
+  }
+}
+createNotes();
+</script>
+
+<!-- Letra -->
+<div id="lyrics-container">
+  <h2>🎧 Melly Mike — I'm Young, Black & Rich 🎧</h2>
+  <div id="lyrics">
+    <div class="lyric-line">Yeah, it all starts with you</div>
+    <div class="lyric-line">Everything you ever wanted and everything you ever dreamed</div>
+    <div class="lyric-line">It starts now, it starts today</div>
+    <div class="lyric-line">There is no tomorrow</div>
+    <div class="lyric-line">I'm tired of your fucking excuses, nigga</div>
+    <div class="lyric-line">Ain't nobody coming to save you, nigga</div>
+    <div class="lyric-line">It's you, it's you versus you, nigga</div>
+    <div class="lyric-line">So how bad you want this shit, huh?</div>
+    <div class="lyric-line">Come on</div>
+    <div class="lyric-line">Yeah, my social meter ran out, so you know I'm finna dip</div>
+    <div class="lyric-line">I just wanna stack this cake, stay out of the way, yeah, that's it</div>
+    <div class="lyric-line">Ain't nobody gave a damn 'bout a young nigga 'til he got rich</div>
+    <div class="lyric-line">I'm geekin' way too hard, yeah, yeah, I'm finna glitch</div>
+    <div class="lyric-line">I just changed my whole lifestyle, I just cut off dead weight</div>
+    <div class="lyric-line">Now they know I'm fly as shit</div>
+    <div class="lyric-line">We always have potential, I'm just cashin' in my chips</div>
+    <div class="lyric-line">Melly Mike just like Steph, yeah, yeah, 'cause he don't miss</div>
+    <div class="lyric-line">I don't give my energy to nobody except my clique</div>
+    <div class="lyric-line">Yeah, I just spent a couple bands eatin' good on a dish</div>
+    <div class="lyric-line">They don't say congratulations, but you know they watch that shit</div>
+    <div class="lyric-line">I ain't even gon' get mad, I'm young, black, and rich</div>
+    <div class="lyric-line">She tryna sell me lies, bitch, I ain't buyin' shit</div>
+    <div class="lyric-line">If we ain't talkin' money, then I'ma plead the fifth</div>
+    <div class="lyric-line">I put ice in my mouth, yeah, I'm hydrated</div>
+    <div class="lyric-line">I'm young, black, and rich...</div>
+  </div>
+
+  <div class="translation">
+    <h3>Tradução 🇧🇷</h3>
+    <p>Sim, tudo começa com você.  
+    Tudo o que você sempre quis e sonhou — começa agora, começa hoje.  
+    Não existe amanhã.  
+    Estou cansado das suas desculpas.  
+    Ninguém vai vir te salvar.  
+    É você contra você.  
+    Então, o quanto você realmente quer isso?</p>
+    <p>Meu medidor social esgotou, então tô indo embora.  
+    Só quero juntar minha grana, ficar de boa, só isso.  
+    Ninguém ligava pra mim até eu ficar rico.  
+    Tô tão animado que parece que vou bugar.  
+    Mudei todo meu estilo de vida, cortei peso morto.  
+    Agora todos sabem que eu tô voando alto.</p>
+    <p>Sempre tivemos potencial, só estou colhendo minhas fichas.  
+    Melly Mike é tipo o Steph Curry — não erra.  
+    Não dou minha energia pra ninguém fora do meu grupo.  
+    Gastei uns trocados comendo bem.  
+    Eles não me parabenizam, mas ficam assistindo.  
+    E eu nem fico bravo — sou jovem, negro e rico.</p>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.lyric-line').forEach(line => {
+  line.addEventListener('click', () => {
+    window.open('https://www.youtube.com/watch?v=F3qWBh7jZZ0', '_blank');
+  });
+});
+</script>
+
+</body>
+</html>
