@@ -109,28 +109,28 @@ footer{
 
 /* ===== CARROSSEL DAS IMAGENS ===== */
 .carousel {
-  display:flex;
-  overflow-x:auto;
-  gap:12px;
-  padding:10px 0;
-  scroll-behavior:smooth;
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 10px 0;
+  scroll-behavior: smooth;
 }
 .carousel::-webkit-scrollbar {
-  height:8px;
+  height: 8px;
 }
 .carousel::-webkit-scrollbar-thumb {
-  background:var(--laranja);
-  border-radius:5px;
+  background: var(--laranja);
+  border-radius: 5px;
 }
 .carousel img {
-  height:220px; /* aumentei o tamanho */
-  flex-shrink:0;
-  border-radius:10px;
-  border:2px solid var(--laranja);
-  transition:transform 0.3s;
+  height: 240px; /* aumentei o tamanho */
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 2px solid var(--laranja);
+  transition: transform 0.3s;
 }
 .carousel img:hover {
-  transform:scale(1.05);
+  transform: scale(1.05);
 }
 </style>
 </head>
@@ -152,13 +152,7 @@ footer{
     <img src="https://bacaini.id/wp-content/uploads/2025/07/pacu-jalur.jpg" alt="Festival Pacu Jalur">
 
     <p>O sucesso foi tanto que o vídeo acabou influenciando até grandes nomes das redes, com versões recriadas em todo o mundo. Confira um exemplo abaixo:</p>
-
-    <div class="videoSection">
-      <iframe width="350" height="200" src="https://www.instagram.com/reel/DMG2aaCsFmU/embed" allowfullscreen></iframe>
-    </div>
-
-    <!-- 🌟 VÍDEOS MOVIDOS PARA CIMA 🌟 -->
-    <h3 style="margin-top:35px;text-align:center;">Veja os vídeos que viralizaram sobre o menino indonésio 🎥</h3>
+    
     <div class="videoSection">
       <div class="videoContainer">
         <div class="videoLabel">Versão Original e Como Foi Feita</div>
@@ -178,9 +172,9 @@ footer{
       </div>
     </div>
 
-    <!-- 🌟 TEXTO DO JOGO + CARROSSEL 🌟 -->
-    <p style="margin-top:30px;">O fenômeno não ficou restrito à vida real: o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
+    <p>O fenômeno não ficou restrito à vida real: o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
 
+    <!-- 🌟 Carrossel Horizontal das Imagens 🌟 -->
     <div class="carousel">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsfkJ3nEZ8ku70-6rfvrptInmje-YivmookQ&s" alt="Imagem 1"> 
       <img src="https://playgama.com/cdn-cgi/imagedelivery/LN2S-4p3-GgZvEx3IPaKUA/b6e4b727-31aa-4f85-87fe-5958d34e3800/enlarged" alt="Imagem 2"> 
@@ -202,10 +196,12 @@ footer{
 </footer>
 
 <!-- Player do YouTube (Música) -->
+<div id="ytplayer" style="width:0;height:0;opacity:0;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player;
 let isPlaying = false;
+
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytplayer', {
     height:'0',
@@ -214,22 +210,24 @@ function onYouTubeIframeAPIReady() {
     playerVars:{autoplay:0,controls:0},
   });
 }
+
 document.getElementById('playButton').addEventListener('click',()=>{
   player.playVideo();
   isPlaying=true;
   document.getElementById('pauseButton').disabled=false;
   document.getElementById('stopButton').disabled=false;
 });
+
 document.getElementById('pauseButton').addEventListener('click',()=>{
   if(isPlaying){player.pauseVideo();isPlaying=false;}
   else{player.playVideo();isPlaying=true;}
 });
+
 document.getElementById('stopButton').addEventListener('click',()=>{
   player.stopVideo();
   isPlaying=false;
 });
 </script>
-<div id="ytplayer" style="display:none;"></div>
 
 </body>
 </html>
