@@ -5,217 +5,158 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Menino Indonésio Viraliza no Festival Pacu Jalur — Trabalho de Português 8ºA</title>
 <style>
-:root {
-  --vermelho: #d62828;
-  --laranja: #f77f00;
-  --cinza: #444;
-  --branco: #fff;
+:root{
+  --vermelho:#d62828;
+  --laranja:#f77f00;
+  --cinza:#444;
+  --branco:#ffffff;
 }
-
-body {
-  margin: 0;
+body{
+  margin:0;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: var(--branco);
-  color: #222;
+  background: url('https://png.pngtree.com/thumb_back/fh260/back_our/20200701/ourmid/pngtree-old-newspaper-vector-image_346885.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  color:#222;
+}
+header{
+  background:linear-gradient(90deg,var(--vermelho),var(--laranja));
+  color:white;
+  text-align:center;
+  padding:20px 10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+header h1{
+  margin:0;
+  font-size:1.8rem;
+}
+main{
+  max-width:1100px;
+  margin:40px auto;
+  padding:0 20px;
+  background:rgba(255,255,255,0.95);
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+h2.manchete{
+  color:var(--vermelho);
+  font-size:2.2rem;
+  margin-top:10px;
+}
+h3.subtitulo{
+  color:var(--cinza);
+  font-size:1.3rem;
+  margin-top:6px;
+  font-weight:500;
+}
+.lide{
+  font-weight:500;
+  line-height:1.8;
+  margin:18px 0;
+  font-size:1.1rem;
+}
+.corpo{
+  line-height:1.8;
+  font-size:1.15rem;
+  text-align:justify;
+}
+img{
+  width:100%;
+  border-radius:10px;
+  margin-top:16px;
+}
+.videoSection{
+  text-align:center;
+  margin-top:25px;
+}
+.videoContainer{
+  display:inline-block;
+  margin:12px;
+  text-align:center;
+}
+.videoLabel{
+  font-weight:700;
+  color:var(--vermelho);
+  margin-bottom:6px;
+}
+iframe{
+  border-radius:10px;
+}
+.botoes{
+  text-align:center;
+  margin:25px 0;
+}
+button, a.btn{
+  background:linear-gradient(90deg,var(--vermelho),var(--laranja));
+  color:white;
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  text-decoration:none;
+  margin:5px;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover, a.btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 15px rgba(247,112,0,0.2);
+}
+footer{
+  text-align:center;
+  padding:15px;
+  background:linear-gradient(90deg,var(--vermelho),var(--laranja));
+  color:white;
+  font-size:1rem;
+  margin-top:40px;
+  border-radius:0 0 12px 12px;
+}
+@media(max-width:700px){
+  iframe{width:100%!important;height:200px!important}
+  .biografia{width:100%;margin-top:20px;}
 }
 
-header {
-  background: linear-gradient(90deg, var(--vermelho), var(--laranja));
-  color: white;
-  text-align: center;
-  padding: 20px 10px;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-main {
-  max-width: 1100px;
-  margin: 30px auto;
-  padding: 0 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* ===== NOTÍCIA ===== */
-article {
-  flex: 3;
-  min-width: 600px;
-}
-
-h2.manchete {
-  color: var(--vermelho);
-  font-size: 2.2rem;
-  margin-top: 10px;
-}
-
-h3.subtitulo {
-  color: var(--cinza);
-  font-size: 1.3rem;
-  margin-top: 6px;
-  font-weight: 500;
-}
-
-.lide {
-  font-weight: 500;
-  line-height: 1.7;
-  margin: 18px 0;
-  font-size: 1.1rem;
-}
-
-.corpo {
-  line-height: 1.8;
-  font-size: 1.1rem;
-  text-align: justify;
-}
-
-img {
-  width: 100%;
-  border-radius: 8px;
-  margin-top: 14px;
-}
-
-/* ===== FRAME BIOGRAFIA ===== */
-aside {
-  flex: 1;
-  background: #fff7f0;
-  border: 2px solid var(--laranja);
-  border-radius: 12px;
-  padding: 0;
-  max-height: 100%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  overflow: hidden;
-}
-
-aside .bioHeader {
-  background: linear-gradient(90deg, var(--vermelho), var(--laranja));
-  color: white;
-  text-align: center;
-  padding: 12px;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-aside .bioContent {
-  padding: 15px;
-}
-
-aside img {
-  border-radius: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-aside p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #333;
-}
-
-/* ===== CARROSSEL ===== */
+/* ===== CARROSSEL DAS IMAGENS ===== */
 .carousel {
   display: flex;
   overflow-x: auto;
-  gap: 16px;
+  gap: 14px;
   padding: 10px 0;
   scroll-behavior: smooth;
 }
-
-.carousel::-webkit-scrollbar {
-  height: 8px;
-}
-
+.carousel::-webkit-scrollbar { height: 8px; }
 .carousel::-webkit-scrollbar-thumb {
   background: var(--laranja);
   border-radius: 5px;
 }
-
 .carousel img {
-  height: 260px; /* aumentei o tamanho */
+  height: 220px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 2px solid var(--laranja);
   transition: transform 0.3s;
 }
+.carousel img:hover { transform: scale(1.07); }
 
-.carousel img:hover {
-  transform: scale(1.08);
-}
-
-/* ===== VÍDEOS ===== */
-.videoSection {
-  text-align: center;
-  margin-top: 25px;
-}
-
-.videoContainer {
-  display: inline-block;
-  margin: 12px;
-  text-align: center;
-}
-
-.videoLabel {
-  font-weight: 700;
-  color: var(--vermelho);
-  margin-bottom: 6px;
-}
-
-iframe {
+/* ===== BIOGRAFIA ===== */
+.biografia {
+  background: rgba(255,255,255,0.92);
+  border: 2px solid var(--laranja);
   border-radius: 10px;
-}
-
-.botoes {
-  text-align: center;
-  margin: 30px 0;
-}
-
-button, a.btn {
-  background: linear-gradient(90deg, var(--vermelho), var(--laranja));
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  text-decoration: none;
-  margin: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover, a.btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(247,112,0,0.2);
-}
-
-footer {
-  text-align: center;
   padding: 15px;
-  background: linear-gradient(90deg, var(--vermelho), var(--laranja));
-  color: white;
-  font-size: 1rem;
-  margin-top: 40px;
+  width: 330px;
+  float: right;
+  margin: 20px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
 }
-
-@media (max-width: 900px) {
-  main {
-    flex-direction: column;
-  }
-
-  article, aside {
-    min-width: 100%;
-  }
-
-  iframe {
-    width: 100% !important;
-    height: 200px !important;
-  }
-
-  .carousel img {
-    height: 200px;
-  }
+.biografia h3 {
+  color: var(--vermelho);
+  text-align: center;
+  margin-bottom: 10px;
+}
+.biografia p {
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 </style>
 </head>
@@ -225,114 +166,102 @@ footer {
 </header>
 
 <main>
-  <!-- ===== ARTIGO PRINCIPAL ===== -->
-  <article>
-    <h2 class="manchete">Menino indonésio viraliza nas Redes Sociais após dança em cima de canoa em Festival na Indonésia</h2>
-    <h3 class="subtitulo">Rayyan Arkan Dikha encantou o público com sua energia contagiante durante o tradicional Festival Pacu Jalur.</h3>
+  <h2 class="manchete">Menino indonésio viraliza nas redes após dança em cima de canoa no Festival Pacu Jalur</h2>
+  <h3 class="subtitulo">Rayyan Arkan Dikha encantou o público com sua energia e espontaneidade no tradicional evento.</h3>
 
-    <p class="lide"><strong>O que, quem, onde e quando:</strong> O menino indonésio <strong>Rayyan Arkan Dikha</strong> viralizou após sua dança em cima de uma canoa durante o <strong>Festival Pacu Jalur</strong>, uma tradicional corrida de barcos que acontece anualmente no <strong>rio Kuantan, em Riau, Indonésia</strong>. O vídeo rapidamente se espalhou pelas redes sociais.</p>
+  <p class="lide"><strong>O que, quem, onde e quando:</strong> O menino indonésio <strong>Rayyan Arkan Dikha</strong> viralizou após sua dança em cima de uma canoa durante o <strong>Festival Pacu Jalur</strong>, uma tradicional corrida de barcos que acontece anualmente no <strong>rio Kuantan, em Riau, Indonésia</strong>. O vídeo rapidamente se espalhou pelas redes sociais, conquistando milhões de visualizações.</p>
 
-    <div class="corpo">
-      <p><strong>Como e por quê:</strong> A dança espontânea e vibrante de Rayyan inspirou diversos criadores de conteúdo e celebridades, que começaram a recriar a cena em diferentes contextos — de carros de luxo a iates. No <strong>TikTok, YouTube e Instagram</strong>, o gesto do menino se tornou um símbolo de alegria e simplicidade.</p>
+  <!-- Biografia ao lado -->
+  <div class="biografia">
+    <h3>🧒 Biografia de Rayyan Arkan Dikha</h3>
+    <p><strong>Idade:</strong> 11 anos</p>
+    <p><strong>Nascimento:</strong> 28 de dezembro de 2014 — Kuantan Singingi, Riau, Indonésia</p>
+    <p><strong>Resumo:</strong> Rayyan tornou-se um fenômeno global após seu vídeo dançando na ponta de um barco durante o Festival Pacu Jalur. Ele começou a dançar aos 9 anos, inspirado por seu pai e tio, que são atletas do evento. O menino disse à BBC que seus movimentos foram completamente espontâneos, criados na hora.</p>
+    <p>Agora, Rayyan é <strong>embaixador cultural</strong> de Riau, já se apresentou na TV nacional e conheceu ministros em Jacarta. Apesar da fama, sonha em ser <strong>policial</strong> e aconselha outros jovens a cuidarem da saúde e acreditarem nos próprios sonhos.</p>
+  </div>
 
-      <img src="https://bacaini.id/wp-content/uploads/2025/07/pacu-jalur.jpg" alt="Festival Pacu Jalur">
+  <div class="corpo">
+    <p><strong>Como e por quê:</strong> A dança vibrante de Rayyan inspirou criadores de conteúdo e celebridades ao redor do mundo, que começaram a recriar a cena em iates, carros e até jogos eletrônicos. A energia contagiante e o carisma natural do garoto tornaram o vídeo símbolo de “alegria genuína”.</p>
 
-      <p>O sucesso foi tanto que o vídeo acabou influenciando até grandes nomes das redes, com versões recriadas em todo o mundo. Confira um exemplo abaixo:</p>
+    <p>O fenômeno chegou às plataformas digitais como TikTok, Instagram e YouTube, com o termo “<strong>aura farming</strong>” sendo usado para descrever a habilidade de Rayyan em parecer naturalmente estiloso e confiante.</p>
 
-      <div class="videoSection">
-        <iframe width="350" height="200" src="https://www.instagram.com/reel/DMG2aaCsFmU/embed" allowfullscreen></iframe>
+    <p>O sucesso foi tanto que ele ultrapassou fronteiras culturais e inspirou homenagens, fanarts e memes em dezenas de países. Muitos internautas destacam a simplicidade do menino como a razão principal do sucesso.</p>
+
+    <p>Atletas e influenciadores, incluindo Travis Kelce e Alex Albon, também reproduziram sua dança, contribuindo ainda mais para a popularidade de Rayyan. Sua performance é vista por muitos como um símbolo de leveza e felicidade no cotidiano.</p>
+
+    <img src="https://bacaini.id/wp-content/uploads/2025/07/pacu-jalur.jpg" alt="Festival Pacu Jalur">
+
+    <p>O sucesso do vídeo também impulsionou o turismo local em Riau, com visitantes de outras cidades indo assistir às próximas edições do Pacu Jalur. Além disso, Rayyan foi homenageado em programas de televisão e eventos culturais como um exemplo de talento e espontaneidade juvenil.</p>
+
+    <h3 style="margin-top:28px;text-align:center;">Veja os vídeos que viralizaram sobre o menino indonésio 🎥</h3>
+
+    <div class="videoSection">
+      <div class="videoContainer">
+        <div class="videoLabel">Versão Original e Como Foi Feita</div>
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/dh5Q3suYdYs" allowfullscreen></iframe>
       </div>
-
-      <h3 style="margin-top:28px;text-align:center;">Veja os vídeos que viralizaram sobre o menino indonésio 🎥</h3>
-      <div class="videoSection">
-        <div class="videoContainer">
-          <div class="videoLabel">Versão Original e Como Foi Feita</div>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/dh5Q3suYdYs" allowfullscreen></iframe>
-        </div>
-        <div class="videoContainer">
-          <div class="videoLabel">Versão Americana</div>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/R-HpiLDRfmA" allowfullscreen></iframe>
-        </div>
-        <div class="videoContainer">
-          <div class="videoLabel">Versão Brasileira</div>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/JFr3Pp6N4gA" allowfullscreen></iframe>
-        </div>
-        <div class="videoContainer">
-          <div class="videoLabel">A História Por Trás do Meme</div>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/gzmkVwwVNfg" allowfullscreen></iframe>
-        </div>
+      <div class="videoContainer">
+        <div class="videoLabel">Versão Americana</div>
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/R-HpiLDRfmA" allowfullscreen></iframe>
       </div>
-
-      <p>O fenômeno não ficou restrito à vida real: o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
-
-      <!-- 🌟 Carrossel Horizontal das Imagens 🌟 -->
-      <div class="carousel">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsfkJ3nEZ8ku70-6rfvrptInmje-YivmookQ&s" alt="Imagem 1">
-        <img src="https://playgama.com/cdn-cgi/imagedelivery/LN2S-4p3-GgZvEx3IPaKUA/b6e4b727-31aa-4f85-87fe-5958d34e3800/enlarged" alt="Imagem 2">
-        <img src="https://cdn.antaranews.com/cache/1200x800/2024/08/22/pacu-jalur-2024.jpeg" alt="Imagem 3">
+      <div class="videoContainer">
+        <div class="videoLabel">Versão Brasileira</div>
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/JFr3Pp6N4gA" allowfullscreen></iframe>
+      </div>
+      <div class="videoContainer">
+        <div class="videoLabel">A História Por Trás do Meme</div>
+        <iframe width="300" height="170" src="https://www.youtube.com/embed/gzmkVwwVNfg" allowfullscreen></iframe>
       </div>
     </div>
 
-    <div class="botoes">
-      <button id="playButton">🎶 Tocar Música</button>
-      <button id="pauseButton" disabled>⏸️ Pausar</button>
-      <button id="stopButton" disabled>⏹️ Parar</button>
-      <a href="pagina2.html" class="btn">📄 Página 2</a>
-      <a href="snake.html" class="btn">🐍 Jogo da Cobrinha</a>
-    </div>
-  </article>
+    <p style="margin-top:35px;"><strong>O fenômeno não ficou restrito à vida real:</strong> o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
 
-  <!-- ===== BIOGRAFIA LATERAL ===== -->
-  <aside>
-    <div class="bioHeader">👦 Biografia de Rayyan Arkan Dikha</div>
-    <div class="bioContent">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lQJpIj8MEVgbM9f0X_nng2U3VrN02s5cZw&s" alt="Rayyan Arkan Dikha">
-      <p><strong>Nome:</strong> Rayyan Arkan Dikha</p>
-      <p><strong>Idade:</strong> 9 anos</p>
-      <p><strong>Origem:</strong> Riau, Indonésia</p>
-      <p><strong>Curiosidade:</strong> Rayyan ficou conhecido por sua energia e espontaneidade no <strong>Festival Pacu Jalur</strong>, transformando um simples momento em um fenômeno global.</p>
-      <p>Hoje, é considerado um símbolo de alegria cultural da Indonésia, inspirando memes, músicas e até jogos no Roblox.</p>
+    <!-- 🌟 Carrossel Horizontal das Imagens 🌟 -->
+    <div class="carousel">
+      <img src="https://techwiser.com/wp-content/uploads/2025/10/Bambu-Bambu-Sahur-in-Steal-a-Brainrot.webp" alt="Imagem 1">
+      <img src="https://playgama.com/cdn-cgi/imagedelivery/LN2S-4p3-GgZvEx3IPaKUA/b6e4b727-31aa-4f85-87fe-5958d34e3800/enlarged" alt="Imagem 2">
     </div>
-  </aside>
+  </div>
+
+  <div class="botoes">
+    <button id="playButton">🎶 Tocar Música</button>
+    <button id="pauseButton" disabled>⏸️ Pausar</button>
+    <button id="stopButton" disabled>⏹️ Parar</button>
+    <a href="pagina2.html" class="btn">📄 Página 2</a>
+    <a href="snake.html" class="btn">🐍 Jogo da Cobrinha</a>
+  </div>
 </main>
 
-<footer>
-  Matheus Máximo e Marcos Guilherme — Direitos Reservados. 8ºA
-</footer>
+<footer>Matheus Máximo e Marcos Guilherme — Direitos Reservados. 8ºA</footer>
 
-<!-- ===== Player de Música ===== -->
+<!-- Player do YouTube (Música) -->
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player;
 let isPlaying = false;
-
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytplayer', {
-    height: '0',
-    width: '0',
+    height: '0', width: '0',
     videoId: 'F3qWBh7jZZ0',
-    playerVars: { autoplay: 0, controls: 0 },
+    playerVars: {autoplay:0, controls:0},
   });
 }
-
 document.getElementById('playButton').addEventListener('click', () => {
   player.playVideo();
   isPlaying = true;
   document.getElementById('pauseButton').disabled = false;
   document.getElementById('stopButton').disabled = false;
 });
-
 document.getElementById('pauseButton').addEventListener('click', () => {
-  if (isPlaying) { player.pauseVideo(); isPlaying = false; }
-  else { player.playVideo(); isPlaying = true; }
+  if(isPlaying){player.pauseVideo(); isPlaying=false;}
+  else{player.playVideo(); isPlaying=true;}
 });
-
 document.getElementById('stopButton').addEventListener('click', () => {
   player.stopVideo();
-  isPlaying = false;
+  isPlaying=false;
 });
 </script>
-
 <div id="ytplayer" style="display:none;"></div>
+
 </body>
 </html>
