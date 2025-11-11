@@ -13,7 +13,7 @@
 }
 body{
   margin:0;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-family:"Segoe UI",Roboto,Arial,sans-serif;
   background:#ffffff;
   color:#222;
 }
@@ -79,7 +79,7 @@ iframe{
   text-align:center;
   margin:25px 0;
 }
-button, a.btn{
+button,a.btn{
   background:linear-gradient(90deg,var(--vermelho),var(--laranja));
   color:white;
   padding:10px 18px;
@@ -91,7 +91,7 @@ button, a.btn{
   cursor:pointer;
   transition:0.3s;
 }
-button:hover, a.btn:hover{
+button:hover,a.btn:hover{
   transform:translateY(-3px);
   box-shadow:0 6px 15px rgba(247,112,0,0.2);
 }
@@ -109,28 +109,28 @@ footer{
 
 /* ===== CARROSSEL DAS IMAGENS ===== */
 .carousel {
-  display: flex;
-  overflow-x: auto;
-  gap: 12px;
-  padding: 10px 0;
-  scroll-behavior: smooth;
+  display:flex;
+  overflow-x:auto;
+  gap:12px;
+  padding:10px 0;
+  scroll-behavior:smooth;
 }
 .carousel::-webkit-scrollbar {
-  height: 8px;
+  height:8px;
 }
 .carousel::-webkit-scrollbar-thumb {
-  background: var(--laranja);
-  border-radius: 5px;
+  background:var(--laranja);
+  border-radius:5px;
 }
 .carousel img {
-  height: 180px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  border: 2px solid var(--laranja);
-  transition: transform 0.3s;
+  height:220px; /* aumentei o tamanho */
+  flex-shrink:0;
+  border-radius:10px;
+  border:2px solid var(--laranja);
+  transition:transform 0.3s;
 }
 .carousel img:hover {
-  transform: scale(1.05);
+  transform:scale(1.05);
 }
 </style>
 </head>
@@ -157,18 +157,8 @@ footer{
       <iframe width="350" height="200" src="https://www.instagram.com/reel/DMG2aaCsFmU/embed" allowfullscreen></iframe>
     </div>
 
-    <p>O fenômeno não ficou restrito à vida real: o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
-
-    <!-- 🌟 Carrossel Horizontal das Imagens 🌟 -->
-    <div class="carousel">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsfkJ3nEZ8ku70-6rfvrptInmje-YivmookQ&s" alt="Imagem 1">
-      <img src="https://static.wikia.nocookie.net/stealabr/images/8/8e/Caca.png/revision/latest/scale-to-width-down/250?cb=20251018160655" alt="Imagem 2">
-      <img src="https://static.wikia.nocookie.net/stealabr/images/5/5e/Aurafarmkid.png/revision/latest/scale-to-width/360?cb=20251018104749" alt="Imagem 3">
-      <img src="https://playgama.com/cdn-cgi/imagedelivery/LN2S-4p3-GgZvEx3IPaKUA/b6e4b727-31aa-4f85-87fe-5958d34e3800/enlarged" alt="Imagem 4">
-    </div>
-
-    <h3 style="margin-top:28px;text-align:center;">Veja os vídeos que viralizaram sobre o menino indonésio 🎥</h3>
-
+    <!-- 🌟 VÍDEOS MOVIDOS PARA CIMA 🌟 -->
+    <h3 style="margin-top:35px;text-align:center;">Veja os vídeos que viralizaram sobre o menino indonésio 🎥</h3>
     <div class="videoSection">
       <div class="videoContainer">
         <div class="videoLabel">Versão Original e Como Foi Feita</div>
@@ -187,6 +177,15 @@ footer{
         <iframe width="300" height="170" src="https://www.youtube.com/embed/gzmkVwwVNfg" allowfullscreen></iframe>
       </div>
     </div>
+
+    <!-- 🌟 TEXTO DO JOGO + CARROSSEL 🌟 -->
+    <p style="margin-top:30px;">O fenômeno não ficou restrito à vida real: o personagem ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
+
+    <div class="carousel">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsfkJ3nEZ8ku70-6rfvrptInmje-YivmookQ&s" alt="Imagem 1"> 
+      <img src="https://playgama.com/cdn-cgi/imagedelivery/LN2S-4p3-GgZvEx3IPaKUA/b6e4b727-31aa-4f85-87fe-5958d34e3800/enlarged" alt="Imagem 2"> 
+    </div>
+
   </div>
 
   <div class="botoes">
@@ -209,23 +208,23 @@ let player;
 let isPlaying = false;
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytplayer', {
-    height: '0',
-    width: '0',
-    videoId: 'F3qWBh7jZZ0', // música
-    playerVars: {autoplay:0, controls:0},
+    height:'0',
+    width:'0',
+    videoId:'F3qWBh7jZZ0',
+    playerVars:{autoplay:0,controls:0},
   });
 }
-document.getElementById('playButton').addEventListener('click', () => {
+document.getElementById('playButton').addEventListener('click',()=>{
   player.playVideo();
-  isPlaying = true;
-  document.getElementById('pauseButton').disabled = false;
-  document.getElementById('stopButton').disabled = false;
+  isPlaying=true;
+  document.getElementById('pauseButton').disabled=false;
+  document.getElementById('stopButton').disabled=false;
 });
-document.getElementById('pauseButton').addEventListener('click', () => {
-  if(isPlaying){player.pauseVideo(); isPlaying=false;}
-  else{player.playVideo(); isPlaying=true;}
+document.getElementById('pauseButton').addEventListener('click',()=>{
+  if(isPlaying){player.pauseVideo();isPlaying=false;}
+  else{player.playVideo();isPlaying=true;}
 });
-document.getElementById('stopButton').addEventListener('click', () => {
+document.getElementById('stopButton').addEventListener('click',()=>{
   player.stopVideo();
   isPlaying=false;
 });
