@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jogo da Cobrinha — Matheus Máximo</title>
+<style>
+  :root{
+    --neon:#00ff6a;
+    --bg:#000;
+    --panel: rgba(10,10,10,0.85);
+    --accent:#00bfff;
+    --danger:#ff4d4d;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:#e6ffe6;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif}
+  .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:18px}
+  header{margin-top:10px}
+  h1{color:var(--neon);font-size:34px;margin:10px;text-align:center;
+      text-shadow:0 0 14px rgba(0,255,106,0.15),0 0 30px rgba(0,255,106,0.06);
+      border:2px solid rgba(0,255,106,0.12);padding:10px 20px;border-radius:10px}
+  .layout{display:flex;gap:18px;width:100%;max-width:1100px;margin-top:14px;align-items:flex-start}
+  /* left column = game area */
+  .left{flex:1;display:flex;flex-direction:column;gap:12px;align-items:center}
+  .panel{background:var(--panel);border:1px solid rgba(255,255,255,0.04);padding:12px;border-radius:12px;width:100%}
+  .controls{display:flex;flex-direction:column;gap:8px;align-items:center}
+  input[type=text], select{width:100%;padding:10px;border-radius:8px;border:1px solid #222;background:#071010;color:var(--neon);font-weight:700}
+  .row{display:flex;gap:8px;width:100%}
+  .btn{background:linear-gradient(90deg,var(--neon),#00bfff);color:#001;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:800;box-shadow:0 6px 20px rgba(0,255,106,0.06)}
+  .btn:disabled{opacity:0.5;cursor:not-allowed}
+  .small{padding:6px 10px;font-size:14px}
+  canvas{background:linear-gradient(180deg,#020202,#050505);border-radius:10px;border:3px solid rgba(255,255,255,0.02);display:block}
+  .info{display:flex;gap:12px;align-items:center;justify-content:center;font-weight:700}
+  .badge{background:var(--glass);padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+  /* right column = leaderboards + challenge box */
+  .right{width:360px;display:flex;flex-direction:column;gap:12px}
+  .leaderboard{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+  .leaderboard h3{margin:0;color:var(--accent);text-align:center}
+  ul.list{list-style:none;padding:0;margin:8px 0;max-height:240px;overflow:auto}
+  ul.list li{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03);display:flex;justify-content:space-between}
+  .smallmuted{font-size:12px;color:#9fd}
+  /* Challenge modal */
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:9999}
+  .modal{width:90%;max-width:760px;background:linear-gradient(180deg,#041122,#022b2f);border:3px solid var(--accent);padding:18px;border-radius:12px;color:#e8fff0}
+  .question{font-size:18px;margin-bottom:8px}
+  .answers{display:flex;flex-direction:column;gap:8px}
+  .answerBtn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:var(--neon);cursor:pointer;font-weight:700}
+  .answerBtn:hover{transform:translateY(-2px)}
+  .letters{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .letter-box{width:44px;height:44px;border-radius:8px;background:#021515;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-weight:900;color:#bff}
+  .completed{background:linear-gradient(90deg,#00ff6a,#00bfff);color:#002}
+  .charadbtt{margin-top:12px;background:linear-gradient(90deg,#00d68a,#00bfff);padding:10px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+  .green-btn{background:linear-gradient(90deg,#00b33c,#00ff6a);border:none;color:#002;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
+  .navs{display:flex;gap:8px;justify-content:center;margin-top:8px}
+  .hint{font-size:13px;color:#9fd;margin-top:6px}
+  footer{margin-top:26px;color:#9fd;font-size:13px}
+  /* responsive */
+  @media(max-width:980px){
+    .layout{flex-direction:column}
+    .right{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>🎮 Jogo da Cobrinha</h1></header>
+
+  <div class="layout">
+    <div class="left">
+      <div class="panel" style="max-width:760px">
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+          <div style="flex:1">
+            <div class="controls">
+              <div style="width:100%;display:flex;gap:8px">
+                <input id="playerName" type="text" placeholder="Digite seu nome (obrigatório)" />
+                <select id="playerSerie">
+                  <option value="">Selecionar série</option>
+                </select>
+              </div>
+              <div style="width:100%;display:flex;gap:8px;justify-content:center;margin-top:6px">
+                <button id="startGame" class="btn small">Começar Jogo</button>
+                <button id="pauseResume" class="btn small" disabled>Pausar</button>
+                <button id="restart" class="btn small" disabled>Reiniciar</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:220px;text-align:center">
+            <div class="info">
+              <div class="badge">🍎 Maçãs: <span id="apples">0</span></div>
+              <div class="badge">🔺 Pontos: <span id="score">0</span></div>
+            </div>
+            <div style="margin-top:8px;font-size:13px" class="smallmuted">
+              Use as setas do teclado para mover.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-direction:column;align-items:center;margin-top:12px">
+          <canvas id="gameCanvas" width="600" height="420" style="max-width:100%"></canvas>
+          <div class="hint">Quando você comer <strong>35 maçãs</strong>, uma porta especial aparecerá 🟦</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="leaderboard panel">
+        <h3>🏆 Top Jogadores (todas partidas)</h3>
+        <ul id="leaderboardList" class="list"></ul>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+          <button id="clearLB" class="btn small">Limpar Leaderboard</button>
+        </div>
+      </div>
+
+      <div class="leaderboard panel">
+        <h3>🎯 Jogadores que completaram a charada</h3>
+        <ul id="charadaList" class="list"></ul>
+      </div>
+
+      <div class="panel" style="text-align:center">
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+          <button class="btn small" onclick="location.href='pagina3.html'">⬅ Página 3</button>
+          <button class="btn small" onclick="location.href='index.html'">🏠 Página Inicial</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Matheus Máximo — Jogo da Cobrinha • Dados salvos no navegador</footer>
+</div>
+
+<!-- Modal for challenge -->
+<div class="modal-back" id="modalBack">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h2 style="color:var(--accent);margin-top:0">🧩 Desafio: Monte a palavra <span style="color:var(--neon)">NOTÍCIA</span></h2>
+    <p class="hint">Responda às perguntas sem dicas. Cada resposta correta revela uma letra. Você precisa completar todas as letras (e responder as 10 perguntas) para liberar o Easter Egg.</p>
+    <div id="questionBox">
+      <div class="question" id="questionText">Pergunta</div>
+      <div class="answers" id="answersContainer"></div>
+    </div>
+    <div class="letters" id="lettersRow"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+      <button id="nextQ" class="charadbtt">Próxima pergunta</button>
+      <button id="closeModal" class="charadbtt">Sair do Desafio</button>
+    </div>
+    <div style="margin-top:12px;text-align:center">
+      <div id="charStatus" class="smallmuted"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen video overlay for Easter Egg -->
+<div id="videoOverlay" style="display:none;position:fixed;inset:0;background:#000;z-index:10001;align-items:center;justify-content:center">
+  <div id="videoContainer" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
+    <!-- iframe will be injected -->
+  </div>
+  <div style="position:fixed;top:12px;right:12px;z-index:10002">
+    <button id="closeVideo" class="green-btn">Sair do Vídeo</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Utility / initial data ---------- */
+const series = [];
+['1','2','3','4','5','6','7','8','9'].forEach(n=>{
+  ['A','B'].forEach(letter=> series.push(n+letter));
+});
+const serieSelect = document.getElementById('playerSerie');
+series.forEach(s=>{
+  const op = document.createElement('option'); op.value=s; op.textContent = s; serieSelect.appendChild(op);
+});
+
+/* ---------- Local Storage keys ---------- */
+const LB_KEY = 'snake_leaderboard_v1';
+const CHAR_KEY = 'snake_charada_completed_v1';
+
+/* ---------- Leaderboard helpers ---------- */
+function loadLeaderboardData(){ return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); }
+function saveLeaderboardData(arr){ localStorage.setItem(LB_KEY, JSON.stringify(arr)); }
+function loadCharadaData(){ return JSON.parse(localStorage.getItem(CHAR_KEY) || '[]'); }
+function saveCharadaData(arr){ localStorage.setItem(CHAR_KEY, JSON.stringify(arr)); }
+
+/* ---------- UI refs ---------- */
+const startGameBtn = document.getElementById('startGame');
+const pauseResumeBtn = document.getElementById('pauseResume');
+const restartBtn = document.getElementById('restart');
+const nameInput = document.getElementById('playerName');
+const applesEl = document.getElementById('apples');
+const scoreEl = document.getElementById('score');
+const lbList = document.getElementById('leaderboardList');
+const charList = document.getElementById('charadaList');
+const clearLB = document.getElementById('clearLB');
+
+/* load leaderboards to UI */
+function renderLeaderboards(){
+  const data = loadLeaderboardData();
+  // sort by score desc and show top 10 (most apples/points)
+  data.sort((a,b)=>b.score - a.score);
+  lbList.innerHTML = '';
+  data.slice(0,10).forEach(entry=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${entry.name} <small style="color:#9fd">(${entry.serie})</small></span><span>${entry.score}</span>`;
+    lbList.appendChild(li);
+  });
+
+  const cdata = loadCharadaData();
+  charList.innerHTML = '';
+  cdata.forEach(e=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${e.name}</span><span>${e.serie}</span>`;
+    charList.appendChild(li);
+  });
+}
+renderLeaderboards();
+
+/* clear LB */
+clearLB.addEventListener('click', ()=>{
+  if(!confirm('Limpar leaderboard de pontuações?')) return;
+  localStorage.removeItem(LB_KEY);
+  renderLeaderboards();
+});
+
+/* ---------- Game implementation ---------- */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let gridSize = 20; // each square in px
+let cols = Math.floor(canvas.width / gridSize);
+let rows = Math.floor(canvas.height / gridSize);
+
+function resetGrid(){ cols = Math.floor(canvas.width / gridSize); rows = Math.floor(canvas.height / gridSize); }
+resetGrid();
+
+/* game state */
+let snake = [{x:Math.floor(cols/2), y:Math.floor(rows/2)}];
+let dir = {x:1,y:0};
+let nextDir = {x:1,y:0};
+let apple = null;
+let applesEaten = 0;
+let score = 0;
+let tileSize = gridSize;
+let snakeLength = 4;
+let gameRunning = false;
+let gamePaused = false;
+let frameInterval = 100; // ms
+let lastFrameTime = 0;
+let door = null; // {x,y} when spawned
+let playerInfo = null;
+
+/* audio via WebAudio for effects */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(frequency, duration=0.07, type='sine', volume=0.06){
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type;
+  o.frequency.value = frequency;
+  g.gain.value = volume;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  setTimeout(()=>{ o.stop(); }, duration*1000);
+}
+function playEat(){ playTone(880,0.09,'sine',0.12); playTone(1320,0.06,'square',0.06); }
+function playMove(){ playTone(220,0.02,'sine',0.02); }
+
+/* spawn apple */
+function spawnApple(){
+  let tries=0;
+  while(tries<200){
+    const x = Math.floor(Math.random()*cols);
+    const y = Math.floor(Math.random()*rows);
+    if(!snake.some(s=>s.x===x && s.y===y) && (!door || door.x!==x || door.y!==y)){
+      apple = {x,y}; return;
+    }
+    tries++;
+  }
+  apple = {x:Math.floor(Math.random()*cols), y:Math.floor(Math.random()*rows)};
+}
+
+/* draw */
+function draw(){
+  // clear
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // draw grid subtle
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<cols;i++){
+    ctx.beginPath(); ctx.moveTo(i*gridSize,0); ctx.lineTo(i*gridSize,canvas.height); ctx.stroke();
+  }
+  for(let j=0;j<rows;j++){
+    ctx.beginPath(); ctx.moveTo(0,j*gridSize); ctx.lineTo(canvas.width,j*gridSize); ctx.stroke();
+  }
+
+  // draw apple
+  if(apple){
+    ctx.fillStyle = '#ff4d4d';
+    ctx.beginPath();
+    ctx.ellipse(apple.x*gridSize + gridSize/2, apple.y*gridSize + gridSize/2, gridSize*0.38, gridSize*0.45, 0,0,Math.PI*2);
+    ctx.fill();
+    // leaf
+    ctx.fillStyle = '#2ecc71';
+    ctx.fillRect(apple.x*gridSize + gridSize*0.68, apple.y*gridSize + gridSize*0.08, gridSize*0.15, gridSize*0.25);
+  }
+
+  // draw door if exists
+  if(door){
+    ctx.fillStyle = '#2f9fff';
+    ctx.fillRect(door.x*gridSize+4, door.y*gridSize+4, gridSize-8, gridSize-8);
+    // door glow
+    ctx.strokeStyle = 'rgba(47,159,255,0.7)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(door.x*gridSize+2, door.y*gridSize+2, gridSize-4, gridSize-4);
+  }
+
+  // draw snake
+  for(let i=0;i<snake.length;i++){
+    const s = snake[i];
+    if(i===0){
+      ctx.fillStyle = 'linear-gradient(180deg,#77ff99,#00ff6a)'; // fallback
+      ctx.fillStyle = '#00ff6a';
+      ctx.fillRect(s.x*gridSize+2, s.y*gridSize+2, gridSize-4, gridSize-4);
+      ctx.fillStyle = '#001';
+      ctx.fillRect(s.x*gridSize+gridSize*0.62, s.y*gridSize+gridSize*0.18, gridSize*0.18, gridSize*0.18);
+    } else {
+      ctx.fillStyle = '#0fbf6a';
+      ctx.fillRect(s.x*gridSize+3, s.y*gridSize+3, gridSize-6, gridSize-6);
+    }
+  }
+}
+
+/* game update */
+function update(){
+  if(!gameRunning || gamePaused) return;
+  // move snake
+  dir = nextDir;
+  const head = {x:snake[0].x + dir.x, y:snake[0].y + dir.y};
+  // wrap around edges
+  if(head.x < 0) head.x = cols-1;
+  if(head.x >= cols) head.x = 0;
+  if(head.y < 0) head.y = rows-1;
+  if(head.y >= rows) head.y = 0;
+
+  // collision with self -> game over
+  if(snake.some((seg,idx)=> idx!==0 && seg.x===head.x && seg.y===head.y)){
+    endGame(false);
+    return;
+  }
+
+  snake.unshift(head);
+  if(snake.length > snakeLength) snake.pop();
+
+  // eat apple
+  if(apple && head.x===apple.x && head.y===apple.y){
+    playEat();
+    snakeLength++;
+    applesEaten++;
+    score += 10;
+    applesEl.textContent = applesEaten;
+    scoreEl.textContent = score;
+    spawnApple();
+
+    // spawn door when 35 apples eaten (only once)
+    if(applesEaten === 35 && !door){
+      // choose random empty tile
+      for(let tries=0; tries<200; tries++){
+        const dx = Math.floor(Math.random()*cols);
+        const dy = Math.floor(Math.random()*rows);
+        if(!snake.some(s=>s.x===dx && s.y===dy) && (!apple || apple.x!==dx || apple.y!==dy)){
+          door = {x:dx,y:dy};
+          break;
+        }
+      }
+    }
+    return;
+  }
+
+  // check door
+  if(door && head.x===door.x && head.y===door.y){
+    // open challenge modal
+    openCharada();
+    gamePaused = true;
+    pauseResumeBtn.disabled = true;
+    return;
+  }
+}
+
+/* animation loop */
+function loop(ts){
+  if(!lastFrameTime) lastFrameTime = ts;
+  if(ts - lastFrameTime >= frameInterval){
+    update();
+    draw();
+    lastFrameTime = ts;
+  }
+  requestAnimationFrame(loop);
+}
+
+/* keyboard controls */
+window.addEventListener('keydown', (e)=>{
+  if(!gameRunning) return;
+  let changed = false;
+  if(['ArrowUp','KeyW'].includes(e.code) && dir.y !== 1){ nextDir = {x:0,y:-1}; changed=true; }
+  if(['ArrowDown','KeyS'].includes(e.code) && dir.y !== -1){ nextDir = {x:0,y:1}; changed=true; }
+  if(['ArrowLeft','KeyA'].includes(e.code) && dir.x !== 1){ nextDir = {x:-1,y:0}; changed=true; }
+  if(['ArrowRight','KeyD'].includes(e.code) && dir.x !== -1){ nextDir = {x:1,y:0}; changed=true; }
+  if(changed) playMove();
+});
+
+/* start/pause/restart handlers */
+startGameBtn.addEventListener('click', ()=>{
+  const name = nameInput.value.trim();
+  const serie = serieSelect.value;
+  if(!name || !serie){ alert('Preencha seu nome e selecione sua série para começar!'); return; }
+  playerInfo = {name, serie};
+  // initialize game state
+  snake = [{x:Math.floor(cols/2), y:Math.floor(rows/2)}];
+  nextDir = {x:1,y:0}; dir = {x:1,y:0};
+  snakeLength = 4; applesEaten=0; score=0; apple = null; door=null;
+  applesEl.textContent = '0'; scoreEl.textContent = '0';
+  spawnApple();
+  gameRunning = true; gamePaused = false;
+  startGameBtn.disabled = true; pauseResumeBtn.disabled=false; restartBtn.disabled=false;
+  nameInput.disabled=true; serieSelect.disabled=true;
+  lastFrameTime = 0;
+  requestAnimationFrame(loop);
+});
+
+pauseResumeBtn.addEventListener('click', ()=>{
+  if(!gameRunning) return;
+  gamePaused = !gamePaused;
+  pauseResumeBtn.textContent = gamePaused ? 'Retomar' : 'Pausar';
+});
+
+restartBtn.addEventListener('click', ()=>{
+  if(!confirm('Recomeçar a partida?')) return;
+  // save current score if any
+  if(gameRunning){
+    saveThisRun();
+  }
+  // reset UI and allow new start
+  startGameBtn.disabled=false; pauseResumeBtn.disabled=true; restartBtn.disabled=true;
+  nameInput.disabled=false; serieSelect.disabled=false;
+  gameRunning=false; gamePaused=false;
+  applesEl.textContent='0'; scoreEl.textContent='0';
+  snake=[]; apple=null; door=null;
+  draw();
+  renderLeaderboards();
+});
+
+/* when game ends (collision) */
+function endGame(isWin){
+  gameRunning=false; gamePaused=true;
+  pauseResumeBtn.disabled=true; restartBtn.disabled=true;
+  // save score
+  saveThisRun();
+  alert('Você morreu! Pontuação salva no leaderboard.');
+  startGameBtn.disabled=false; nameInput.disabled=false; serieSelect.disabled=false;
+  // reset snake to let user start again
+}
+
+/* save run to leaderboard and persist */
+function saveThisRun(){
+  if(!playerInfo) return;
+  const data = loadLeaderboardData();
+  data.push({name:playerInfo.name, serie:playerInfo.serie, score});
+  saveLeaderboardData(data);
+  renderLeaderboards();
+}
+
+/* open challenge modal (charada) */
+const modalBack = document.getElementById('modalBack');
+const questionText = document.getElementById('questionText');
+const answersContainer = document.getElementById('answersContainer');
+const lettersRow = document.getElementById('lettersRow');
+const nextQBtn = document.getElementById('nextQ');
+const closeModalBtn = document.getElementById('closeModal');
+const charStatus = document.getElementById('charStatus');
+
+/* Charada questions — 10 perguntas (sem dicas). Each correct reveals next letter of "NOTICIA" in order.
+   I created 10 questions; the first 7 correct reveal the letters N O T I C I A respectively.
+   To finish charada, all 10 must be answered correctly (extra 3 are still required but don't reveal new letters). */
+const questions = [
+  {q:"Qual é o nome do evento tradicional de corridas de canoas mencionado no trabalho?", a:"Pacu Jalur"},
+  {q:"Qual o primeiro nome do menino que viralizou no festival?", a:"Rayyan"},
+  {q:"Em que país aconteceu o festival?", a:"Indonésia"},
+  {q:"Qual o termo em inglês usado no trabalho para representar o jogo 'Roube um Brainrot'?", a:"Steal a Brainrot"},
+  {q:"Qual o personagem do jogo inspirado no menino é chamado de Bambu Bambu... (apenas complete 'Bambu')", a:"Bambu"},
+  {q:"Qual a profissão que Rayyan disse que deseja ter (segundo a biografia)?", a:"Policial"},
+  {q:"Qual o nome da professora que orientou o trabalho?", a:"Sheila"},
+  {q:"Qual a plataforma onde o vídeo viralizou e é mencionada: TikTok, YouTube e ...?", a:"Instagram"},
+  {q:"Quantas maçãs o jogador precisa comer para a porta aparecer no jogo?", a:"35"},
+  {q:"Qual o nome do cantor da música de fundo mencionada nas páginas (Melly ...)?", a:"Mike"}
+];
+
+/* Map of letter reveal order: first 7 correct answers reveal letters of NOTICIA */
+const revealLetters = ['N','O','T','I','C','I','A']; // 7 positions
+let currentQ = 0;
+let correctCount = 0;
+let revealedLetters = Array(revealLetters.length).fill('');
+
+/* build letters row UI */
+function buildLettersUI(){
+  lettersRow.innerHTML = '';
+  revealedLetters.forEach(ch=>{
+    const d = document.createElement('div');
+    d.className = 'letter-box' + (ch ? ' completed' : '');
+    d.textContent = ch || '_';
+    lettersRow.appendChild(d);
+  });
+}
+buildLettersUI();
+
+/* shuffle answers helper (since answers are open text, we'll accept case-insensitive exact matches) */
+function openCharada(){
+  modalBack.style.display = 'flex';
+  currentQ = 0; correctCount=0;
+  // reset revealed letters only if not previously completed
+  // build UI and show first
+  buildLettersUI();
+  presentQuestion();
+  charStatus.textContent = `Pergunta ${currentQ+1} de ${questions.length}`;
+}
+
+/* show question */
+function presentQuestion(){
+  const qObj = questions[currentQ];
+  questionText.textContent = qObj.q;
+  answersContainer.innerHTML = '';
+  // Since we want no hints and no multiple choices, present an input for answer
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = 'Digite sua resposta exata (sem acentos se preferir)';
+  inp.style.padding='10px'; inp.style.borderRadius='8px'; inp.style.width='100%';
+  inp.style.background='#001a1a'; inp.style.color='var(--neon)'; inp.style.border='1px solid rgba(255,255,255,0.04)';
+  answersContainer.appendChild(inp);
+  const sub = document.createElement('button');
+  sub.textContent = 'Enviar resposta';
+  sub.className = 'answerBtn';
+  sub.style.marginTop='8px';
+  answersContainer.appendChild(sub);
+
+  sub.addEventListener('click', ()=>{
+    const userAns = inp.value.trim();
+    if(!userAns){ alert('Digite uma resposta antes de enviar'); return; }
+    const correct = qObj.a.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const given = userAns.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(given === correct){
+      // correct
+      correctCount++;
+      // reveal next letter if within 7 reveals
+      if(revealedLetters.includes('') ){
+        const idx = revealedLetters.indexOf('');
+        revealedLetters[idx] = revealLetters[idx];
+      }
+      buildLettersUI();
+      alert('Resposta correta!');
+    } else {
+      alert('Resposta incorreta. Tente a próxima pergunta (sem dicas).');
+    }
+    // advance question
+    currentQ++;
+    charStatus.textContent = `Pergunta ${Math.min(currentQ+1, questions.length)} de ${questions.length}`;
+    if(currentQ < questions.length) presentQuestion();
+    else finishCharada();
+  });
+}
+
+/* finish charada: check if word is complete (all letters revealed) */
+function finishCharada(){
+  // if not all letters revealed, but correctCount maybe lower; allow only completion when all revealed
+  const allRevealed = revealedLetters.every(ch=>ch && ch.trim()!=='');
+  if(!allRevealed){
+    // user didn't reveal all letters
+    // but we require completion of all questions anyway; if incomplete, still show status and allow reattempt later
+    const want = confirm('Você terminou as perguntas mas não revelou todas as letras de NOTÍCIA. Deseja tentar novamente o desafio para tentar completar? (OK = tentar novamente, Cancel = fechar)');
+    if(want){
+      // reset for retry
+      currentQ = 0; correctCount = 0; revealedLetters = Array(revealedLetters.length).fill(''); buildLettersUI(); presentQuestion();
+      return;
+    } else { modalBack.style.display='none'; gamePaused=false; pauseResumeBtn.disabled=false; return; }
+  }
+  // success: add player to charada completed leaderboard if not already present
+  const pdata = loadCharadaData();
+  const exists = pdata.some(e => e.name === playerInfo.name && e.serie === playerInfo.serie);
+  if(!exists){
+    pdata.push({name:playerInfo.name, serie:playerInfo.serie});
+    saveCharadaData(pdata);
+    renderLeaderboards();
+  }
+  // show success + button to access Easter Egg
+  answersContainer.innerHTML = `<div style="text-align:center;margin-top:8px"><strong>Parabéns! Você completou NOTÍCIA ✅</strong></div>`;
+  const eggBtn = document.createElement('button');
+  eggBtn.className = 'green-btn';
+  eggBtn.textContent = 'Liberado para acessar o Easter Egg';
+  answersContainer.appendChild(eggBtn);
+  eggBtn.addEventListener('click', ()=>{
+    // open video in fullscreen overlay
+    openEasterEggVideo();
+  });
+  // close next
+  nextQBtn.disabled=true;
+  charStatus.textContent = 'Charada completada ✔️';
+}
+
+/* modal controls */
+nextQBtn.addEventListener('click', ()=>{ currentQ++; if(currentQ<questions.length) presentQuestion(); else finishCharada(); });
+closeModalBtn.addEventListener('click', ()=>{ modalBack.style.display='none'; gamePaused=false; pauseResumeBtn.disabled=false; });
+
+/* Easter Egg video open in fullscreen overlay */
+const videoOverlay = document.getElementById('videoOverlay');
+const videoContainer = document.getElementById('videoContainer');
+const closeVideo = document.getElementById('closeVideo');
+
+function openEasterEggVideo(){
+  // create iframe embed with autoplay
+  videoContainer.innerHTML = '';
+  const iframe = document.createElement('iframe');
+  // embed id from short TQnvTpSgACg
+  iframe.src = 'https://www.youtube.com/embed/TQnvTpSgACg?autoplay=1&rel=0&modestbranding=1';
+  iframe.style.width='100%'; iframe.style.height='100%'; iframe.style.border='none';
+  videoContainer.appendChild(iframe);
+  videoOverlay.style.display = 'flex';
+  // request fullscreen on the overlay container (must be user-initiated, we are inside click event)
+  const elem = videoOverlay;
+  if(elem.requestFullscreen){
+    elem.requestFullscreen().catch(err=>{ /* fullscreen may be blocked */ });
+  } else if(elem.webkitRequestFullscreen){
+    elem.webkitRequestFullscreen();
+  }
+}
+
+/* close video */
+closeVideo.addEventListener('click', ()=>{
+  // exit fullscreen if available
+  if(document.fullscreenElement || document.webkitFullscreenElement){
+    if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+  videoOverlay.style.display='none';
+  videoContainer.innerHTML='';
+});
+
+/* ensure leaderboard UI initial */
+renderLeaderboards();
+
+/* make canvas responsive to resize */
+window.addEventListener('resize', ()=>{
+  // keep canvas original resolution, but could adapt; here we maintain fixed, not resize to avoid grid issues
+});
+
+/* set up initial draw */
+spawnApple();
+draw();
+
+</script>
+</body>
+</html>
