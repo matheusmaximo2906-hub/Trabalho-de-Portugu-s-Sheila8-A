@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Página 3 - Processo de Elaboração</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('https://fastcompanybrasil.com/wp-content/uploads/2023/02/recompensa_bom_trabalho.jpg') no-repeat center center/cover;
+    backdrop-filter: blur(10px);
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 30, 0.7);
+    backdrop-filter: blur(10px);
+  }
+
+  .content {
+    position: relative;
+    background: rgba(10, 10, 40, 0.8);
+    border: 3px solid #00bfff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 800px;
+    text-align: center;
+    z-index: 2;
+    box-shadow: 0 0 25px rgba(0, 191, 255, 0.6);
+  }
+
+  h1 {
+    color: #00bfff;
+    font-size: 30px;
+    margin-bottom: 20px;
+  }
+
+  p {
+    text-align: justify;
+    line-height: 1.8;
+    margin: 10px 0;
+  }
+
+  .buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  button {
+    background: #00bfff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #008ccc;
+  }
+
+  .code-box {
+    background: rgba(0, 0, 60, 0.7);
+    border: 1px solid #00bfff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 25px;
+    text-align: left;
+    font-family: "Courier New", monospace;
+    color: #7fff00;
+    overflow-y: auto;
+    max-height: 200px;
+  }
+
+  .blur-bg {
+    filter: blur(15px);
+  }
+</style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="content">
+    <h1>Processo de elaboração do Trabalho</h1>
+    <p><strong>Matheus</strong> foi o responsável por toda a parte do site. Ele fez as programações, aplicou as linguagens de marcação e estilo, e criou todo o site sozinho, com dedicação total ao projeto.</p>
+    <p><strong>Marcos</strong> realizou todas as pesquisas necessárias e também deu ideias criativas para o trabalho, incluindo a sugestão de colocar o vídeo <em>“Steal a Brainrot”</em> para representar o menino da canoa.</p>
+    <p><strong>Professora Sheila</strong> foi essencial na orientação. Ela explicou todos os requisitos, orientou sobre o que deveria ser entregue e ajudou a direcionar o desenvolvimento do trabalho.</p>
+
+    <div class="code-box">
+      <p>&lt;html&gt;</p>
+      <p>&nbsp;&nbsp;&lt;head&gt;</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Trabalho Escolar&lt;/title&gt;</p>
+      <p>&nbsp;&nbsp;&lt;/head&gt;</p>
+      <p>&nbsp;&nbsp;&lt;body&gt;</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Processo de Criação&lt;/h1&gt;</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;Matheus programou o site inteiro com HTML, CSS e JavaScript.&lt;/p&gt;</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;Marcos fez as pesquisas e ideias criativas.&lt;/p&gt;</p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;Professora Sheila orientou e guiou o trabalho.&lt;/p&gt;</p>
+      <p>&nbsp;&nbsp;&lt;/body&gt;</p>
+      <p>&lt;/html&gt;</p>
+    </div>
+
+    <div class="buttons">
+      <button onclick="window.location.href='pagina2.html'">⬅ Voltar pra Página 2</button>
+      <button onclick="window.location.href='index.html'">🏠 Página Inicial</button>
+    </div>
+  </div>
+</body>
+</html>
