@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Cobrinha</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      overflow-y: auto;
+    }
+
+    h1 {
+      color: #00ff6a;
+      font-size: 28px;
+      margin-top: 40px;
+      text-shadow: 0 0 15px #00ff6a, 0 0 30px #00ff6a;
+      border: 2px solid #00ff6a;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: rgba(0, 255, 100, 0.1);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+      background: rgba(0, 255, 100, 0.1);
+      padding: 20px;
+      border: 2px solid #00ff6a;
+      border-radius: 15px;
+      width: 320px;
+    }
+
+    input, select, button {
+      margin: 10px;
+      padding: 10px;
+      width: 90%;
+      font-family: 'Press Start 2P', monospace;
+      border-radius: 8px;
+      border: none;
+      text-align: center;
+    }
+
+    input, select {
+      background: #111;
+      color: #0f0;
+      border: 2px solid #00ff6a;
+    }
+
+    button {
+      background: #00ff6a;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00cc55;
+      transform: scale(1.05);
+    }
+
+    .leaderboard {
+      margin-top: 40px;
+      border: 2px solid #00ff6a;
+      padding: 15px;
+      border-radius: 10px;
+      width: 320px;
+      background: rgba(0, 255, 100, 0.05);
+    }
+
+    .leaderboard h2 {
+      color: #00ff6a;
+      text-align: center;
+      font-size: 14px;
+      text-shadow: 0 0 10px #00ff6a;
+    }
+
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .leaderboard li {
+      border-bottom: 1px solid #00ff6a;
+      padding: 5px 0;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .nav-buttons {
+      margin-top: 25px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-buttons button {
+      background: #00ff6a;
+      color: #000;
+      border-radius: 6px;
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .nav-buttons button:hover {
+      background: #00cc55;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 Jogo da Cobrinha</h1>
+
+  <div class="container">
+    <input type="text" id="playerName" placeholder="Digite seu nome">
+    <select id="playerSerie">
+      <option value="">Selecione sua série</option>
+      <option value="1A">1º A</option>
+      <option value="1B">1º B</option>
+      <option value="2A">2º A</option>
+      <option value="2B">2º B</option>
+      <option value="3A">3º A</option>
+      <option value="3B">3º B</option>
+      <option value="4A">4º A</option>
+      <option value="4B">4º B</option>
+      <option value="5A">5º A</option>
+      <option value="5B">5º B</option>
+      <option value="6A">6º A</option>
+      <option value="6B">6º B</option>
+      <option value="7A">7º A</option>
+      <option value="7B">7º B</option>
+      <option value="8A">8º A</option>
+      <option value="8B">8º B</option>
+      <option value="9A">9º A</option>
+      <option value="9B">9º B</option>
+    </select>
+    <button id="startBtn">Começar Jogo</button>
+  </div>
+
+  <div class="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <ul id="leaderboardList"></ul>
+  </div>
+
+  <div class="nav-buttons">
+    <button onclick="window.location.href='index.html'">🏠 Página Inicial</button>
+    <button onclick="window.location.href='pagina3.html'">⬅ Página 3</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const nameInput = document.getElementById("playerName");
+    const serieSelect = document.getElementById("playerSerie");
+    const leaderboardList = document.getElementById("leaderboardList");
+
+    // Carregar leaderboard
+    function loadLeaderboard() {
+      const data = JSON.parse(localStorage.getItem("snakeLeaderboard")) || [];
+      leaderboardList.innerHTML = "";
+      data.forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.name} (${entry.serie}) - ${entry.score} pontos`;
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    // Salvar nova pontuação
+    function saveScore(name, serie, score) {
+      const data = JSON.parse(localStorage.getItem("snakeLeaderboard")) || [];
+      data.push({ name, serie, score });
+      localStorage.setItem("snakeLeaderboard", JSON.stringify(data));
+      loadLeaderboard();
+    }
+
+    // Começar o jogo
+    startBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      const serie = serieSelect.value;
+      if (!name || !serie) {
+        alert("Por favor, preencha seu nome e série!");
+        return;
+      }
+      localStorage.setItem("snakePlayer", JSON.stringify({ name, serie }));
+      window.location.href = "snakegame.html"; // próxima parte do jogo
+    });
+
+    loadLeaderboard();
+  </script>
+
+</body>
+</html>
