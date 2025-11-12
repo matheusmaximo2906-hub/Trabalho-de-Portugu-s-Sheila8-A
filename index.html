@@ -193,7 +193,7 @@ footer{
 
     <p>O sucesso do vídeo também impulsionou o turismo local em Riau, com visitantes de outras cidades indo assistir às próximas edições do Pacu Jalur. Além disso, Rayyan foi homenageado em programas de televisão e eventos culturais como um exemplo de talento e espontaneidade juvenil.</p>
 
-    <!-- AQUI: vídeo do Instagram (adicionado exatamente conforme pediu, abaixo da notícia) -->
+    <!-- AQUI: vídeo do Instagram -->
     <div class="videoSection" style="margin-top:18px;">
       <iframe width="520" height="600" src="https://www.instagram.com/reel/DMG2aaCsFmU/embed" allowfullscreen></iframe>
     </div>
@@ -219,8 +219,6 @@ footer{
       </div>
     </div>
 
-    <p style="margin-top:35px;"><strong>O fenômeno não ficou restrito somente à vida real:</strong> o menino indonésio ganhou destaque dentro do jogo <strong>Steal a Brainrot (Roube um Brainrot)</strong>, com o nome <strong>Bambu Bambu Sahur</strong>, criado por <strong>Sammy</strong> — conhecido no Roblox como <strong>SpyderSammy</strong>. O personagem se tornou uma febre entre os jogadores, inspirando danças e desafios no universo gamer.</p>
-
     <!-- 🌟 Carrossel Horizontal das Imagens 🌟 -->
     <div class="carousel">
       <img src="https://techwiser.com/wp-content/uploads/2025/10/Bambu-Bambu-Sahur-in-Steal-a-Brainrot.webp" alt="Imagem 1">
@@ -233,7 +231,7 @@ footer{
     <button id="pauseButton" disabled>⏸️ Pausar</button>
     <button id="stopButton" disabled>⏹️ Parar</button>
     <a href="pagina2.html" class="btn">📄 Página 2</a>
-    <a href="snake.html" class="btn">🐍 Jogo da Cobrinha</a>
+    <a href="#" id="snakeButton" class="btn">🐍 Jogo da Cobrinha</a>
   </div>
 </main>
 
@@ -267,6 +265,25 @@ document.getElementById('stopButton').addEventListener('click', () => {
 });
 </script>
 <div id="ytplayer" style="display:none;"></div>
+
+<!-- SCRIPT BOTÃO SUAVE PARA JOGO DA COBRINHA -->
+<script>
+const snakeBtn = document.getElementById('snakeButton');
+const clickSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2563/2563-preview.mp3");
+
+snakeBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  clickSound.currentTime = 0;
+  clickSound.play();
+  snakeBtn.style.transform = "scale(0.95)";
+  snakeBtn.style.boxShadow = "0 0 20px 5px #f77f00";
+  setTimeout(() => {
+    snakeBtn.style.transform = "";
+    snakeBtn.style.boxShadow = "";
+    window.location.href = "jogo_cobrinha.html"; // redireciona
+  }, 300);
+});
+</script>
 
 </body>
 </html>
