@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agradecimento</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: white;
+        color: black;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Fundo com o texto repetido */
+    .background-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        justify-content: center;
+        opacity: 0.08;
+        font-size: 40px;
+        color: black;
+        pointer-events: none;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    /* Texto subindo */
+    .scrolling-names {
+        position: absolute;
+        bottom: -100%;
+        width: 100%;
+        text-align: center;
+        animation: scrollUp 45s linear infinite;
+        font-size: 30px;
+        font-weight: bold;
+        color: #ff6600;
+        z-index: 2;
+    }
+
+    @keyframes scrollUp {
+        from {bottom: -100%;}
+        to {bottom: 100%;}
+    }
+
+    .frame-agradecimento {
+        position: relative;
+        background: white;
+        border: 4px solid orange;
+        border-radius: 20px;
+        width: 80%;
+        max-width: 800px;
+        margin: 120px auto;
+        padding: 30px;
+        box-shadow: 0 0 20px rgba(255,165,0,0.3);
+        text-align: center;
+        z-index: 3;
+    }
+
+    .frame-agradecimento h1 {
+        color: orange;
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    .frame-agradecimento p {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .frame-final {
+        background: orange;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        z-index: 3;
+    }
+
+    /* Botões rainbow */
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 40px;
+        margin-top: 40px;
+        z-index: 3;
+        position: relative;
+    }
+
+    .rainbow-btn {
+        background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+        background-size: 400%;
+        animation: rainbow 5s infinite linear;
+        border: none;
+        color: white;
+        padding: 15px 30px;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .rainbow-btn:hover {
+        transform: scale(1.08);
+    }
+
+    @keyframes rainbow {
+        0% {background-position: 0%;}
+        100% {background-position: 400%;}
+    }
+</style>
+</head>
+<body>
+
+<!-- Música calma de fundo -->
+<audio autoplay loop>
+  <source src="https://www.youtube.com/watch?v=UOJ4V3DAAx8&list=RDUOJ4V3DAAx8&start_radio=1" type="audio/mp3">
+</audio>
+
+<div class="background-text">
+    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila 
+    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila 
+</div>
+
+<div class="scrolling-names">
+    Matheus Henrique da Silva Máximo<br>
+    Marcos Guilherme<br>
+    Sheila<br>
+    Português<br>
+    Notícia<br>
+    8ºA<br>
+    D'ávila<br>
+    Cidade Tiradentes
+</div>
+
+<div class="frame-agradecimento">
+    <h1>AGRADECIMENTO ESPECIAL</h1>
+    <p>Eu, <b>Matheus Henrique da Silva Máximo</b>, gostaria de agradecer de coração às professoras <b>Santa</b>, <b>Jéssica</b>, à coordenadora <b>Kátia</b>, à professora <b>Márcia</b> e principalmente à professora <b>Sheila</b> pelo carinho e pela força que todas me deram para dar continuidade neste trabalho.  
+    Agradeço também ao <b>Marcos Guilherme</b>, que fez todas as pesquisas e ficou comigo desde o início até o fim, dando ideias e ajudando a melhorar o site e o trabalho inteiro.  
+    Sou muito grato por todos vocês existirem na minha vida e fazerem parte dessa jornada. ❤️</p>
+
+    <p>Também quero mencionar que aprendi muito sobre <b>gramática</b> e escrita correta graças ao <b>Web Exército Brasileiro</b> do Roblox, que me ajudou bastante nessa área 🇧🇷.</p>
+
+    <p>Além disso, me ofereço para <b>fazer trabalhos escolares por sites</b>, de qualquer tema, por apenas <b>R$20,00</b>. 😄💻</p>
+</div>
+
+<div class="buttons">
+    <button class="rainbow-btn" onclick="window.location.href='index.html'">Página Inicial</button>
+    <button class="rainbow-btn" onclick="window.location.href='pagina2.html'">Página 2</button>
+    <button class="rainbow-btn" onclick="window.location.href='pagina3.html'">Página 3</button>
+    <button class="rainbow-btn" onclick="window.location.href='jogo_cobrinha.html'">Jogo da Cobrinha</button>
+    <button class="rainbow-btn" onclick="window.location.href='creditos.html'">Voltar aos Créditos</button>
+</div>
+
+<div class="frame-final">
+    Trabalho de Português - Matheus Máximo e Marcos Guilherme - 8ºA Professora Sheila
+</div>
+
+</body>
+</html>
