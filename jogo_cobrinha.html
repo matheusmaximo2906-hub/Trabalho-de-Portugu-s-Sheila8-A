@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Jogo da Cobrinha — Matheus Máximo</title>
+<title>Jogo da Cobrinha — Matheus Henrique da Silva Máximo - 8ºA</title>
 <style>
   :root{
     --neon:#00ff6a;
@@ -173,7 +173,7 @@
         </div>
         <div style="display:flex;gap:12px;flex-direction:column;align-items:center;margin-top:12px">
           <canvas id="gameCanvas" width="600" height="420" style="max-width:100%"></canvas>
-          <div class="hint">Quando você comer <strong>10 maçãs</strong>, uma porta especial aparecerá 🟦</div>
+          <div class="hint">Quando você comer <strong>15 maçãs</strong>, uma porta especial aparecerá 🟦</div>
         </div>
       </div>
     </div>
@@ -430,7 +430,7 @@ function update(){
     playEat();
     snakeLength++;
     applesEaten++;
-    score += 10;
+    score += 15;
     applesEl.textContent = applesEaten;
     scoreEl.textContent = score;
     spawnApple();
@@ -562,7 +562,7 @@ const questions = [
   {q:"Qual o termo em inglês usado no trabalho para representar o jogo 'Roube um Brainrot'?", a:"Steal a Brainrot"},
   {q:"Qual o personagem do jogo inspirado no menino é chamado de Bambu Bambu...", a:"Bambu Bambu Sahur"},
   {q:"Qual a profissão que Rayyan disse que deseja ter (segundo a biografia)?", a:"Policial"},
-  {q:"Qual o nome da professora que orientou o trabalho e qual a matéria que ela passa?", a:"Sheila de Português"},
+  {q:"Qual o nome da professora que orientou o trabalho e qual a matéria que ela passa?", a:"Professora Sheila de Português"},
   {q:"Qual a plataforma onde o vídeo viralizou e é mencionada: TikTok, YouTube e ...?", a:"Instagram"},
   {q:"Quantas maçãs o jogador precisa comer para a porta aparecer no jogo?", a:"10"},
   {q:"Qual o nome do cantor da música de fundo mencionada nas páginas (Melly ...)?", a:"Mike"}
@@ -692,7 +692,7 @@ function openEasterEggVideo(){
   videoContainer.innerHTML = '';
   const iframe = document.createElement('iframe');
   // embed id from short TQnvTpSgACg
-  iframe.src = 'https://youtu.be/2mQa0oWjTLY?si=T4PoZCS_hXOnZo0M';
+  iframe.src = 'https://www.youtube.com/embed/2mQa0oWjTLY?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=2mQa0oWjTLY';
   iframe.style.width='100%'; iframe.style.height='100%'; iframe.style.border='none';
   videoContainer.appendChild(iframe);
   videoOverlay.style.display = 'flex';
