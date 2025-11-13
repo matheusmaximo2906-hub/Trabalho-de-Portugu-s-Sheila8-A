@@ -12,7 +12,7 @@
         background-size: cover;
         background-position: center;
         backdrop-filter: blur(8px);
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: white;
         min-height: 100vh;
         display: flex;
@@ -22,16 +22,41 @@
         padding-top: 50px;
     }
 
+    /* 🌈 Frame rainbow animado */
     .creditos-frame {
-        background: rgba(0, 0, 0, 0.7);
-        padding: 30px;
+        background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(20,20,20,0.8));
+        border: 4px solid transparent;
         border-radius: 20px;
+        background-clip: padding-box;
+        padding: 30px;
         width: 80%;
         max-width: 900px;
         text-align: center;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 25px rgba(255,255,255,0.4);
+        position: relative;
+        overflow: hidden;
         animation: fadeIn 1s ease;
         margin-bottom: 40px;
+    }
+
+    .creditos-frame::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        z-index: -1;
+        border-radius: 20px;
+        background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+        background-size: 400% 400%;
+        animation: rainbow 5s linear infinite;
+    }
+
+    @keyframes rainbow {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
     }
 
     @keyframes fadeIn {
@@ -48,11 +73,6 @@
         -webkit-text-fill-color: transparent;
         animation: rainbow 5s infinite linear;
         margin-bottom: 20px;
-    }
-
-    @keyframes rainbow {
-        0% {background-position: 0%;}
-        100% {background-position: 400%;}
     }
 
     p {
@@ -91,6 +111,44 @@
         border-radius: 15px;
         box-shadow: 0 0 25px rgba(255,255,255,0.2);
     }
+
+    /* 🌈 Botões rainbow */
+    .buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .rainbow-button {
+        background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet);
+        background-size: 400% 400%;
+        animation: rainbow 4s linear infinite;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+
+    .rainbow-button:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 25px rgba(255,255,255,0.6);
+    }
+
+    .click-effect {
+        animation: clickEffect 0.4s ease;
+    }
+
+    @keyframes clickEffect {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(0.9); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
 </style>
 </head>
 <body>
@@ -118,12 +176,46 @@
     </p>
     <hr>
     <p><b>Jogo da Cobrinha:</b> Feito inteiramente por Matheus Henrique da Silva Máximo.</p>
+
+    <div class="buttons">
+        <button class="rainbow-button" onclick="voltarPagina2(this)">⬅ Página 2</button>
+        <button class="rainbow-button" onclick="voltarPagina3(this)">⬅ Página 3</button>
+        <button class="rainbow-button" onclick="paginaInicial(this)">🏠 Página Inicial</button>
+        <button class="rainbow-button" onclick="irJogoCobrinha(this)">🐍 Jogo da Cobrinha</button>
+    </div>
 </div>
 
 <div class="video-section">
     <h2>Vídeo do Jogo Steal a Brainrot (Roube um Brainrot) inspirado no vídeo do menino indonésio</h2>
     <iframe src="https://www.youtube.com/embed/KLuHm4ZAvNM" allowfullscreen></iframe>
 </div>
+
+<script>
+    function clickAnim(button) {
+        button.classList.add('click-effect');
+        setTimeout(() => button.classList.remove('click-effect'), 400);
+    }
+
+    function voltarPagina2(btn) {
+        clickAnim(btn);
+        setTimeout(() => window.location.href = 'pagina2.html', 400);
+    }
+
+    function voltarPagina3(btn) {
+        clickAnim(btn);
+        setTimeout(() => window.location.href = 'pagina3.html', 400);
+    }
+
+    function paginaInicial(btn) {
+        clickAnim(btn);
+        setTimeout(() => window.location.href = 'index.html', 400);
+    }
+
+    function irJogoCobrinha(btn) {
+        clickAnim(btn);
+        setTimeout(() => window.location.href = 'jogo_cobrinha.html', 400);
+    }
+</script>
 
 </body>
 </html>
