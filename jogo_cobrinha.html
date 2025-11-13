@@ -435,8 +435,8 @@ function update(){
     scoreEl.textContent = score;
     spawnApple();
 
-    // spawn door when 35 apples eaten (only once)
-    if(applesEaten === 10 && !door){
+    // spawn door when 15 apples eaten (only once)
+    if(applesEaten === 15 && !door){
       // choose random empty tile
       for(let tries=0; tries<200; tries++){
         const dx = Math.floor(Math.random()*cols);
