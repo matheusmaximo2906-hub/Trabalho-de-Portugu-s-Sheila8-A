@@ -60,9 +60,84 @@
     .layout{flex-direction:column}
     .right{width:100%}
   }
+
+  /* ——— ADIÇÕES: créditos rolando + overlay de jogador/tempo ——— */
+  /* Fundo preto com nomes rolando (atrás de tudo) */
+  #creditsBg {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    overflow: hidden;
+    z-index: -2; /* atrás de tudo — modais tem z-index alto */
+    pointer-events: none;
+  }
+  #creditsRoll {
+    position: absolute;
+    bottom: -100%;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    font-family: Inter, Arial, sans-serif;
+    letter-spacing: 0.6px;
+    animation: creditsUp 50s linear infinite;
+    opacity: 0.9;
+  }
+  #creditsRoll p { margin: 36px 0; }
+  @keyframes creditsUp {
+    0% { bottom: -110%; }
+    100% { bottom: 110%; }
+  }
+
+  /* Overlay para mostrar jogador e tempo (fica sobre o jogo) */
+  #overlayInfo {
+    position: fixed;
+    left: 12px;
+    bottom: 12px;
+    z-index: 10005;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.04);
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--neon);
+    font-weight:700;
+    font-family: Inter, Arial, sans-serif;
+    display: flex;
+    gap:12px;
+    align-items:center;
+  }
+  #overlayInfo .smallInfo { font-size:13px; color:#dff; font-weight:600; }
+  #overlayInfo #playerDisplay { color: var(--neon); }
+  #overlayInfo #gameTimer { color: #9fd; }
 </style>
 </head>
 <body>
+<div id="creditsBg" aria-hidden="true">
+  <div id="creditsRoll">
+    <p>Matheus Máximo</p>
+    <p>Marcos Guilherme</p>
+    <p>Sheila</p>
+    <p>8ºA</p>
+    <p>Notícia</p>
+    <p>Português</p>
+    <!-- repetir para suavizar o loop -->
+    <p>Matheus Máximo</p>
+    <p>Marcos Guilherme</p>
+    <p>Sheila</p>
+    <p>8ºA</p>
+    <p>Notícia</p>
+    <p>Português</p>
+  </div>
+</div>
+
+<!-- Overlay que mostra o nome/série do jogador e o cronômetro -->
+<div id="overlayInfo" style="display:none">
+  <div class="smallInfo">Jogador: <span id="playerDisplay">—</span></div>
+  <div class="smallInfo">Série: <span id="playerSerieDisplay">—</span></div>
+  <div class="smallInfo">Tempo: <span id="gameTimer">0s</span></div>
+</div>
+
 <div class="wrap">
   <header><h1>🎮 Jogo da Cobrinha</h1></header>
 
@@ -648,6 +723,71 @@ renderLeaderboards();
 window.addEventListener('resize', ()=>{
   // keep canvas original resolution, but could adapt; here we maintain fixed, not resize to avoid grid issues
 });
+
+/* ——— ADIÇÕES: Timer & Player overlay control (não altera o funcionamento do jogo) ——— */
+const overlay = document.getElementById('overlayInfo');
+const playerDisplay = document.getElementById('playerDisplay');
+const playerSerieDisplay = document.getElementById('playerSerieDisplay');
+const gameTimerEl = document.getElementById('gameTimer');
+
+let elapsedTime = 0;
+let timerInterval = null;
+
+function updateTimerDisplay(){
+  gameTimerEl.textContent = elapsedTime + 's';
+}
+
+function startTimer(){
+  if(timerInterval) return;
+  timerInterval = setInterval(()=>{ elapsedTime++; updateTimerDisplay(); }, 1000);
+}
+
+function pauseTimer(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+}
+
+function resetTimer(){
+  pauseTimer();
+  elapsedTime = 0; updateTimerDisplay();
+  // hide overlay if no player
+  if(!playerInfo) overlay.style.display='none';
+}
+
+/* Hook: quando o jogo começar, exibimos o overlay e iniciamos o timer */
+startGameBtn.addEventListener('click', ()=>{
+  // somente se o começo foi bem sucedido (nome e série preenchidos)
+  const name = nameInput.value.trim();
+  const serie = serieSelect.value;
+  if(!name || !serie) return;
+  playerDisplay.textContent = name;
+  playerSerieDisplay.textContent = serie;
+  overlay.style.display = 'flex';
+  resetTimer();
+  startTimer();
+});
+
+/* Pause/Resume: sincroniza o timer quando o jogador aperta o botão */
+pauseResumeBtn.addEventListener('click', ()=>{
+  // toggling: se timer ativo -> pause; se não -> start
+  if(timerInterval) pauseTimer();
+  else startTimer();
+});
+
+/* Reiniciar: reset timer e overlay */
+restartBtn.addEventListener('click', ()=>{
+  resetTimer();
+  overlay.style.display = 'none';
+});
+
+/* Watcher: se o jogo terminar fora do fluxo (endGame), garantimos que o timer pare */
+const timerWatcher = setInterval(()=>{
+  if(!gameRunning){
+    pauseTimer();
+  }
+}, 300);
+
+/* Quando a charada fecha (usuário sai), e jogo resumido, o timer já está atrelado ao pause/resume btn.
+   Também, se o jogador morrer via endGame, o watcher acima pausa o timer. */
 
 /* set up initial draw */
 spawnApple();
