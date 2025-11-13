@@ -8,36 +8,73 @@
     body {
         margin: 0;
         padding: 0;
-        overflow: hidden;
         background: white;
         color: black;
         font-family: Arial, sans-serif;
-        position: relative;
+        overflow-y: scroll; /* agora dá pra rolar a tela */
+        height: 100vh;
     }
 
-    /* Fundo com texto animado azul */
+    /* Fundo com o texto repetido */
     .background-text {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 1;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        justify-content: center;
         opacity: 0.08;
-        font-weight: bold;
-        color: #007bff;
-        text-align: center;
         font-size: 40px;
-        animation: moveText 12s linear infinite;
+        color: #007bff;
+        pointer-events: none;
+        line-height: 1.2;
+        text-align: center;
+        z-index: 0;
+        animation: glowBlue 5s infinite alternate;
     }
 
-    @keyframes moveText {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(-100%); }
+    @keyframes glowBlue {
+        0% { color: #007bff; }
+        100% { color: #00ffff; }
     }
 
-    /* Frame de agradecimento */
+    /* Texto subindo rápido */
+    .scrolling-names {
+        position: fixed;
+        bottom: -100%;
+        width: 100%;
+        text-align: center;
+        animation: scrollUp 5s linear infinite;
+        font-size: 28px;
+        font-weight: bold;
+        color: #ff6600;
+        z-index: 1;
+    }
+
+    @keyframes scrollUp {
+        0% { bottom: -100%; }
+        100% { bottom: 100%; }
+    }
+
+    /* Emojis subindo */
+    .hearts {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: heartsUp 5s linear infinite;
+        font-size: 24px;
+        z-index: 1;
+    }
+
+    @keyframes heartsUp {
+        0% { bottom: 0; opacity: 1; }
+        100% { bottom: 100%; opacity: 0; }
+    }
+
     .frame-agradecimento {
         position: relative;
         background: white;
@@ -45,11 +82,11 @@
         border-radius: 20px;
         width: 80%;
         max-width: 800px;
-        margin: 120px auto;
+        margin: 150px auto;
         padding: 30px;
         box-shadow: 0 0 20px rgba(255,165,0,0.3);
         text-align: center;
-        z-index: 3;
+        z-index: 2;
     }
 
     .frame-agradecimento h1 {
@@ -63,43 +100,6 @@
         line-height: 1.6;
     }
 
-    /* Nomes subindo */
-    .name {
-        position: absolute;
-        right: 10%;
-        bottom: -50px;
-        font-size: 22px;
-        font-weight: bold;
-        color: #ff6600;
-        opacity: 0;
-        animation: nameUp 5s linear forwards;
-        z-index: 3;
-    }
-
-    @keyframes nameUp {
-        0% { bottom: -50px; opacity: 0; }
-        20% { opacity: 1; }
-        80% { opacity: 1; }
-        100% { bottom: 110%; opacity: 0; }
-    }
-
-    /* Corações subindo */
-    .heart {
-        position: absolute;
-        bottom: -50px;
-        font-size: 24px;
-        color: red;
-        opacity: 0;
-        animation: heartUp 6s linear forwards;
-    }
-
-    @keyframes heartUp {
-        0% { transform: translateY(0) scale(0.8); opacity: 0; }
-        20% { opacity: 1; }
-        80% { opacity: 1; }
-        100% { transform: translateY(-800px) scale(1.3); opacity: 0; }
-    }
-
     .frame-final {
         background: orange;
         color: white;
@@ -107,8 +107,7 @@
         padding: 15px;
         font-size: 18px;
         font-weight: bold;
-        position: absolute;
-        bottom: 0;
+        margin-top: 50px;
         width: 100%;
         z-index: 3;
     }
@@ -119,8 +118,7 @@
         flex-wrap: wrap;
         gap: 15px;
         justify-content: center;
-        margin-bottom: 40px;
-        margin-top: 40px;
+        margin: 40px auto;
         z-index: 3;
         position: relative;
     }
@@ -143,34 +141,52 @@
     }
 
     @keyframes rainbow {
-        0% {background-position: 0%;}
-        100% {background-position: 400%;}
+        0% { background-position: 0%; }
+        100% { background-position: 400%; }
     }
-
 </style>
 </head>
 <body>
 
+<!-- Fundo com o nome da escola -->
 <div class="background-text">
     EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila 
-    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila 
-    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila 
+    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila
+    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila
+    EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila EMEF Professor Antônio D'ávila
 </div>
 
+<!-- Nomes subindo -->
+<div class="scrolling-names">
+    Matheus Henrique da Silva Máximo<br>
+    Marcos Guilherme<br>
+    Sheila<br>
+    Português<br>
+    Notícia<br>
+    8ºA<br>
+    D'ávila<br>
+    Cidade Tiradentes
+</div>
+
+<!-- Corações subindo -->
+<div class="hearts">❤️ 💛 💚 💙 💜 🤍 💖</div>
+
+<!-- Frame principal -->
 <div class="frame-agradecimento">
     <h1>AGRADECIMENTO ESPECIAL</h1>
     <p>Eu, <b>Matheus Henrique da Silva Máximo</b>, gostaria de agradecer de coração às professoras <b>Santa</b>, <b>Jéssica</b>, à coordenadora <b>Kátia</b>, à professora <b>Márcia</b> e principalmente à professora <b>Sheila</b> pelo carinho e pela força que todas me deram para dar continuidade neste trabalho.  
     Agradeço também ao <b>Marcos Guilherme</b>, que fez todas as pesquisas e ficou comigo desde o início até o fim, dando ideias e ajudando a melhorar o site e o trabalho inteiro.  
     Sou muito grato por todos vocês existirem na minha vida e fazerem parte dessa jornada. ❤️</p>
 
-    <p>Também quero mencionar que aprendi muito sobre <b>gramática</b> e escrita correta graças ao <b>Web Exército Brasileiro</b> do Roblox, que me ajudou bastante nessa área 🇧🇷.  
-    Sei que jogar um <b>Web Exército Brasileiro é vergonhoso</b>, mas da mesma maneira, me ajudou bastante na área da gramática.</p>
+    <p>Também quero mencionar que aprendi muito sobre <b>gramática</b> e escrita correta graças ao <b>Web Exército Brasileiro</b> do Roblox, que me ajudou bastante nessa área 🇧🇷. Sei que jogar um <b>Web Exército Brasileiro é vergonhoso</b>, mas me ajudou demais na gramática.</p>
 
     <p>Além disso, me ofereço para <b>fazer trabalhos escolares por sites</b>, de qualquer tema, por apenas <b>R$20,00</b>.</p>
 
-    <button class="rainbow-btn" id="playMusic">🎵 Tocar Música</button>
+    <br>
+    <button class="rainbow-btn" onclick="playMusic()">🎵 Tocar Música</button>
 </div>
 
+<!-- Botões de navegação -->
 <div class="buttons">
     <button class="rainbow-btn" onclick="window.location.href='index.html'">Página Inicial 🏡</button>
     <button class="rainbow-btn" onclick="window.location.href='pagina2.html'">Página 2 📄</button>
@@ -179,53 +195,23 @@
     <button class="rainbow-btn" onclick="window.location.href='creditos.html'">Voltar aos Créditos 🎬</button>
 </div>
 
+<!-- Rodapé -->
 <div class="frame-final">
     Trabalho de Português - Matheus Máximo e Marcos Guilherme - 8ºA Professora Sheila
 </div>
 
-<audio id="music" loop>
+<!-- Música -->
+<audio id="bgMusic" loop>
   <source src="musica_calma.mp3" type="audio/mp3">
 </audio>
 
 <script>
-    const nomes = [
-        "Matheus Henrique da Silva Máximo",
-        "Marcos Guilherme",
-        "Sheila",
-        "Português",
-        "Notícia",
-        "8ºA",
-        "D'ávila",
-        "Cidade Tiradentes"
-    ];
-
-    function criarNome() {
-        const nome = document.createElement("div");
-        nome.className = "name";
-        nome.textContent = nomes[Math.floor(Math.random() * nomes.length)];
-        nome.style.right = (5 + Math.random() * 20) + "%";
-        document.body.appendChild(nome);
-        setTimeout(() => nome.remove(), 5000);
-    }
-
-    setInterval(criarNome, 5000);
-
-    // corações flutuantes
-    function criarCoracao() {
-        const heart = document.createElement("div");
-        heart.className = "heart";
-        heart.textContent = "❤️";
-        heart.style.left = Math.random() * 100 + "%";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 6000);
-    }
-    setInterval(criarCoracao, 1500);
-
-    // tocar música
-    document.getElementById("playMusic").addEventListener("click", () => {
-        document.getElementById("music").play();
-        alert("🎶 Música iniciada com amor!");
+function playMusic() {
+    const music = document.getElementById('bgMusic');
+    music.play().catch(() => {
+        alert("Clique permitido! Agora a música vai tocar 🎶");
     });
+}
 </script>
 
 </body>
