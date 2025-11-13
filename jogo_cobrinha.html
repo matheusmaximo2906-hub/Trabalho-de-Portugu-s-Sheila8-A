@@ -3,239 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogo da Cobrinha</title>
+<title>Jogo da Cobrinha — 8ºA</title>
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        background-image: url('https://i.pinimg.com/originals/8c/22/5b/8c225b70cda98f5bda6dfb89c4cb84e7.jpg');
-        background-size: cover;
-        background-position: center;
-        font-family: Arial, sans-serif;
-        color: white;
-        text-align: center;
-    }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    color: white;
+    font-family: "Segoe UI", sans-serif;
+  }
 
-    h1 {
-        margin-top: 20px;
-        font-size: 40px;
-        font-weight: bold;
-        background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-        background-size: 400%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: rainbow 5s infinite linear;
-    }
+  canvas {
+    display: block;
+    margin: auto;
+    background: #111;
+    border: 2px solid #00ff00;
+  }
 
-    @keyframes rainbow {
-        0% {background-position: 0%;}
-        100% {background-position: 400%;}
-    }
+  #hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 18px;
+    color: #0f0;
+  }
 
-    canvas {
-        background: rgba(0, 0, 0, 0.6);
-        margin-top: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
-    }
+  #easterEggBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+    background-size: 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    font-size: 20px;
+    border: 3px solid white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: none;
+    animation: rainbow 4s infinite linear;
+  }
 
-    .charadas-frame {
-        background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-        background-size: 600%;
-        animation: rainbow 5s infinite linear;
-        padding: 20px;
-        border-radius: 20px;
-        width: 80%;
-        max-width: 900px;
-        margin: 40px auto;
-        color: black;
-        text-align: left;
-    }
+  @keyframes rainbow {
+    0% { background-position: 0%; }
+    100% { background-position: 400%; }
+  }
 
-    .charadas-frame h2 {
-        color: white;
-        text-align: center;
-        text-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
+  /* fundo do easter egg */
+  #easterEggScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 999;
+  }
 
-    input {
-        width: 90%;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-    }
+  #scrollingText {
+    position: absolute;
+    bottom: -100%;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    animation: scrollText 15s linear forwards;
+  }
 
-    button {
-        background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-        background-size: 400%;
-        color: white;
-        font-weight: bold;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-        margin: 10px;
-        animation: rainbow 5s infinite linear;
-    }
+  @keyframes scrollText {
+    from { bottom: -100%; }
+    to { bottom: 120%; }
+  }
 
-    button:hover {
-        transform: scale(1.1);
-    }
-
-    .easter-egg-btn {
-        background: limegreen;
-        color: white;
-        font-weight: bold;
-        padding: 15px 30px;
-        border-radius: 20px;
-        border: none;
-        cursor: pointer;
-        display: none;
-        margin-top: 20px;
-        font-size: 18px;
-    }
+  iframe {
+    width: 80%;
+    height: 80%;
+    border: none;
+    z-index: 1000;
+  }
 </style>
 </head>
 <body>
 
-<h1>Jogo da Cobrinha 🐍</h1>
-
 <canvas id="game" width="400" height="400"></canvas>
-
-<div class="charadas-frame">
-    <h2>Charadas — Complete para desbloquear o Easter Egg 🎯</h2>
-    <div id="charadas-container"></div>
-    <button onclick="verificarRespostas()">Verificar Respostas</button>
+<div id="hud">
+  Pontos: <span id="score">0</span><br>
+  Tempo: <span id="time">0</span>s
 </div>
+<button id="easterEggBtn">🎉 Easter Egg</button>
 
-<button id="easterEggButton" class="easter-egg-btn" onclick="abrirEasterEgg()">Liberado para acessar o Easter Egg 🎁</button>
-
-<div style="margin-top: 30px;">
-    <button onclick="window.location.href='index.html'">Página Inicial</button>
-    <button onclick="window.location.href='pagina2.html'">Página 2</button>
-    <button onclick="window.location.href='pagina3.html'">Página 3</button>
+<!-- Tela do Easter Egg -->
+<div id="easterEggScreen">
+  <div id="scrollingText">Matheus Máximo — Marcos Guilherme — Sheila — 8ºA</div>
+  <iframe id="easterVideo" src="" allowfullscreen></iframe>
 </div>
 
 <script>
-// --- JOGO DA COBRINHA ---
+document.body.requestFullscreen().catch(()=>{}); // abre fullscreen automático
+
 const canvas = document.getElementById('game');
-const context = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 let box = 20;
-let snake = [];
-snake[0] = { x: 10 * box, y: 10 * box };
-let direction = "RIGHT";
-let food = {
-    x: Math.floor(Math.random() * 20) * box,
-    y: Math.floor(Math.random() * 20) * box
-};
+let snake = [{x: 9 * box, y: 10 * box}];
+let direction;
+let food = {x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box};
+let score = 0;
+let startTime = Date.now();
+let interval;
 
-document.addEventListener("keydown", directionEvent);
+document.addEventListener('keydown', directionControl);
 
-function directionEvent(event) {
-    if(event.keyCode == 37 && direction != "RIGHT") direction = "LEFT";
-    if(event.keyCode == 38 && direction != "DOWN") direction = "UP";
-    if(event.keyCode == 39 && direction != "LEFT") direction = "RIGHT";
-    if(event.keyCode == 40 && direction != "UP") direction = "DOWN";
+function directionControl(e) {
+  if (e.keyCode === 37 && direction !== "RIGHT") direction = "LEFT";
+  if (e.keyCode === 38 && direction !== "DOWN") direction = "UP";
+  if (e.keyCode === 39 && direction !== "LEFT") direction = "RIGHT";
+  if (e.keyCode === 40 && direction !== "UP") direction = "DOWN";
 }
 
 function draw() {
-    context.fillStyle = "rgba(0,0,0,0.6)";
-    context.fillRect(0, 0, 400, 400);
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, 400, 400);
 
-    for(let i = 0; i < snake.length; i++) {
-        context.fillStyle = i == 0 ? "lime" : "white";
-        context.fillRect(snake[i].x, snake[i].y, box, box);
-    }
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = (i === 0) ? "#0f0" : "#0a0";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  }
 
-    context.fillStyle = "red";
-    context.fillRect(food.x, food.y, box, box);
+  ctx.fillStyle = "red";
+  ctx.fillRect(food.x, food.y, box, box);
 
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
+  let snakeX = snake[0].x;
+  let snakeY = snake[0].y;
 
-    if(direction == "LEFT") snakeX -= box;
-    if(direction == "UP") snakeY -= box;
-    if(direction == "RIGHT") snakeX += box;
-    if(direction == "DOWN") snakeY += box;
+  if (direction === "LEFT") snakeX -= box;
+  if (direction === "UP") snakeY -= box;
+  if (direction === "RIGHT") snakeX += box;
+  if (direction === "DOWN") snakeY += box;
 
-    if(snakeX == food.x && snakeY == food.y) {
-        food = {
-            x: Math.floor(Math.random() * 20) * box,
-            y: Math.floor(Math.random() * 20) * box
-        };
-    } else {
-        snake.pop();
-    }
+  if (snakeX === food.x && snakeY === food.y) {
+    score++;
+    food = {x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box};
+    document.getElementById('score').textContent = score;
+  } else {
+    snake.pop();
+  }
 
-    let newHead = { x: snakeX, y: snakeY };
+  let newHead = {x: snakeX, y: snakeY};
 
-    if(snakeX < 0 || snakeY < 0 || snakeX >= 400 || snakeY >= 400 || collision(newHead, snake))
-        return clearInterval(game);
+  if (snakeX < 0 || snakeY < 0 || snakeX >= 400 || snakeY >= 400 || collision(newHead, snake)) {
+    clearInterval(interval);
+    saveLeaderboard();
+    alert("Game Over!");
+  }
 
-    snake.unshift(newHead);
+  snake.unshift(newHead);
+
+  let elapsed = Math.floor((Date.now() - startTime) / 1000);
+  document.getElementById('time').textContent = elapsed;
 }
 
 function collision(head, array) {
-    for(let i = 0; i < array.length; i++){
-        if(head.x == array[i].x && head.y == array[i].y){
-            return true;
-        }
-    }
-    return false;
+  for (let i = 0; i < array.length; i++) {
+    if (head.x === array[i].x && head.y === array[i].y) return true;
+  }
+  return false;
 }
 
-let game = setInterval(draw, 100);
+interval = setInterval(draw, 100);
 
-// --- CHARADAS ---
-const charadas = [
-    { pergunta: "O que tem cabeça e dente, mas não é gente?", resposta: "alho" },
-    { pergunta: "Qual é a coisa que quanto mais se tira, maior fica?", resposta: "buraco" },
-    { pergunta: "O que é, o que é: cai em pé e corre deitado?", resposta: "chuva" },
-    { pergunta: "O que é o que é: feito para andar e não anda?", resposta: "estrada" },
-    { pergunta: "Tem pescoço, mas não tem cabeça. O que é?", resposta: "garrafa" },
-    { pergunta: "O que é que quanto mais quente fica, mais fresco é?", resposta: "banho" },
-    { pergunta: "Tem dentes, mas não come. O que é?", resposta: "pente" },
-    { pergunta: "É redondo, tem boca, mas não fala. O que é?", resposta: "pote" },
-    { pergunta: "O que é que quanto mais cresce, mais baixo fica?", resposta: "prego" },
-    { pergunta: "Qual é o lugar mais certo do mundo?", resposta: "correto" }
-];
+// salvar leaderboard (pontuação e tempo)
+function saveLeaderboard() {
+  let bestScore = localStorage.getItem("snakeBestScore") || 0;
+  let bestTime = localStorage.getItem("snakeBestTime") || 0;
+  let currentTime = Math.floor((Date.now() - startTime) / 1000);
 
-const container = document.getElementById('charadas-container');
-charadas.forEach((c, i) => {
-    const div = document.createElement('div');
-    div.innerHTML = `
-        <p><b>${i + 1}.</b> ${c.pergunta}</p>
-        <input type="text" id="charada${i}">
-    `;
-    container.appendChild(div);
+  if (score > bestScore) localStorage.setItem("snakeBestScore", score);
+  if (currentTime > bestTime) localStorage.setItem("snakeBestTime", currentTime);
+}
+
+// 🧩 Charada + desbloqueio do botão Easter Egg
+setTimeout(() => {
+  let resposta = prompt("Charada: O menino que dançou no barco é de qual país?");
+  if (resposta && resposta.toLowerCase().includes("indon")) {
+    document.getElementById('easterEggBtn').style.display = "block";
+    alert("🎉 Você acertou! O botão secreto foi desbloqueado!");
+  }
+}, 8000);
+
+// 🎬 Ação do botão Easter Egg
+const easterBtn = document.getElementById('easterEggBtn');
+easterBtn.addEventListener('click', () => {
+  document.getElementById('easterEggScreen').style.display = "flex";
+  document.getElementById('easterVideo').src = "https://www.youtube.com/embed/KLuHm4ZAvNM?autoplay=1";
 });
-
-function verificarRespostas() {
-    let acertos = 0;
-    charadas.forEach((c, i) => {
-        const resposta = document.getElementById(`charada${i}`).value.trim().toLowerCase();
-        if(resposta === c.resposta) acertos++;
-    });
-    if(acertos === charadas.length) {
-        alert("Parabéns! Você completou todas as charadas!");
-        document.getElementById('easterEggButton').style.display = "inline-block";
-    } else {
-        alert(`Você acertou ${acertos}/${charadas.length}. Continue tentando!`);
-    }
-}
-
-// --- EASTER EGG ---
-function abrirEasterEgg() {
-    const url = "https://www.youtube.com/embed/TQnvTpSgACg?autoplay=1";
-    const win = window.open(url, "_blank");
-    if(win) {
-        win.focus();
-        win.document.body.requestFullscreen?.();
-    }
-}
 </script>
 
 </body>
