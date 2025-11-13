@@ -63,11 +63,37 @@
     font-size: 15px;
     border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
   }
 
   button:hover {
-    background: #008ccc;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+  }
+
+  .rainbow-button {
+    background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet);
+    background-size: 400% 400%;
+    animation: rainbow 4s linear infinite;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255,255,255,0.5);
+    transition: transform 0.2s ease;
+  }
+
+  .rainbow-button:hover {
+    transform: scale(1.1);
+  }
+
+  @keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   .code-box {
@@ -85,6 +111,16 @@
 
   .blur-bg {
     filter: blur(15px);
+  }
+
+  .click-effect {
+    animation: clickEffect 0.4s ease;
+  }
+
+  @keyframes clickEffect {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
   }
 </style>
 </head>
@@ -112,9 +148,32 @@
     </div>
 
     <div class="buttons">
-      <button onclick="window.location.href='pagina2.html'">⬅ Voltar pra Página 2</button>
-      <button onclick="window.location.href='index.html'">🏠 Página Inicial</button>
+      <button onclick="voltarPagina2(this)">⬅ Voltar pra Página 2</button>
+      <button onclick="irPaginaInicial(this)">🏠 Página Inicial</button>
+      <button class="rainbow-button" onclick="irParaCreditos(this)">🌈 Créditos</button>
     </div>
   </div>
+
+<script>
+  function clickAnim(button) {
+    button.classList.add('click-effect');
+    setTimeout(() => button.classList.remove('click-effect'), 400);
+  }
+
+  function voltarPagina2(btn) {
+    clickAnim(btn);
+    setTimeout(() => window.location.href = 'pagina2.html', 400);
+  }
+
+  function irPaginaInicial(btn) {
+    clickAnim(btn);
+    setTimeout(() => window.location.href = 'index.html', 400);
+  }
+
+  function irParaCreditos(btn) {
+    clickAnim(btn);
+    setTimeout(() => window.location.href = 'creditos.html', 400);
+  }
+</script>
 </body>
 </html>
