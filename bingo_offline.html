@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bingo Offline</title>
+</head>
+<body>
+
+<h1>MODO ROLETAA OFFLINE</h1>
+
+<button onclick="sortearPergunta()">Sortear Pergunta</button>
+<div id="perguntaBox" style="margin-top: 20px; font-size: 20px;"></div>
+
+<br><br>
+<button onclick="location.href='index.html'">Voltar</button>
+
+<script>
+  const perguntas = [
+    "O que é o Festival Pacu Jalur?",
+    "Quem é Rayyan Arkan Dikha?",
+    "Onde Rayyan nasceu?",
+    "Quando aconteceu o festival?",
+    "Qual é o sonho de Rayyan?",
+    "Quem reproduziu a dança de Rayyan?",
+    "O que significa 'aura farming'?",
+    "Como Rayyan viralizou?",
+  ];
+
+  function sortearPergunta() {
+    const i = Math.floor(Math.random() * perguntas.length);
+    document.getElementById("perguntaBox").innerText = perguntas[i];
+  }
+</script>
+
+</body>
+</html>
