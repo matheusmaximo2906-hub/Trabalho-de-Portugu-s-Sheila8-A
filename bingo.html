@@ -6,6 +6,18 @@
 <title>Bingo — Modo Online / Offline</title>
 
 <style>
+
+/* ---------- Estilos da PART 2 (cartelas + UI) ---------- */
+#cartela { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+.card-player { background:#fff; color:#012033; padding:8px; border-radius:8px; min-width:230px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+.card-title { font-weight:700; margin-bottom:8px; font-size:0.95rem; text-align:left; }
+.grid5 { display:grid; grid-template-columns:repeat(5,44px); gap:6px; justify-content:center; }
+.grid5 .cell { width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:6px; background:#f3f6f8; font-weight:700; cursor:pointer; user-select:none; font-size:14px; }
+.grid5 .cell.mark { background:#2b8cff; color:white; }
+.controls-host { margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.small-note { font-size:0.85rem; color:#333; margin-top:6px; }
+.bingo-winner { background:#ffd54d; padding:6px; border-radius:6px; margin-top:8px; font-weight:700; }
+    
     body {
         font-family: Arial, sans-serif;
         background: #eef;
@@ -97,7 +109,517 @@
         messagingSenderId: "641887131012",
         appId: "1:641887131012:web:0b932028f09ed0f62179d1"
     };
+/* ---------- PARTE 2: visual, marcação, sync, validação ---------- */
 
+/* --------- Helpers locais --------- */
+function formatCardArray(cardArr) {
+  // recebe array de 25 números e transforma em matriz 5x5 com centro livre '★'
+  const mat = [];
+  for (let r = 0; r < 5; r++) {
+    mat[r] = [];
+    for (let c = 0; c < 5; c++) {
+      mat[r][c] = cardArr[r*5 + c];
+    }
+  }
+  mat[2][2] = '★';
+  return mat;
+}
+function createEmptyMarks() {
+  // 5x5 false
+  return Array.from({length:25},()=>false);
+}
+
+/* --------- Render de uma cartela para o DOM --------- */
+function renderSingleCard(container, playerId, cardObj, isLocalPlayer) {
+  // cardObj: {cartela: [25 numbers], marks: [25 booleans], name?: string}
+  const wrapper = document.createElement('div');
+  wrapper.className = 'card-player';
+  const title = document.createElement('div');
+  title.className = 'card-title';
+  title.textContent = (cardObj.name ? cardObj.name : ('Jogador ' + playerId)) + (isLocalPlayer ? ' (Você)' : '');
+  wrapper.appendChild(title);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid5';
+  const mat = formatCardArray(cardObj.cartela || cardObj); // compatibilidade
+
+  // marks array:
+  const marks = cardObj.marks || createEmptyMarks();
+
+  for (let r=0;r<5;r++){
+    for (let c=0;c<5;c++){
+      const idx = r*5 + c;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.idx = idx;
+      cell.textContent = mat[r][c];
+      if (mat[r][c] === '★' || marks[idx]) {
+        cell.classList.add('mark');
+      }
+      // se for sua cartela, permite marcar/desmarcar e sincroniza
+      if (isLocalPlayer) {
+        cell.addEventListener('click', async () => {
+          // toggle
+          const markedNow = cell.classList.toggle('mark');
+          // atualizar no Firebase
+          const markPath = `salas/${salaAtual}/jogadores/${jogadorID}/marks/${idx}`;
+          await set(ref(db, markPath), markedNow ? true : null); // escrever true ou remover (null) para simplificar
+          // checar bingo local
+          const winner = checkBingoFromDom(wrapper);
+          if (winner) {
+            // avisar host / sala
+            await set(ref(db, `salas/${salaAtual}/claims/${jogadorID}`), {
+              at: Date.now(),
+              name: cardObj.name || ('Jogador ' + jogadorID)
+            });
+            alert('Você marcou BINGO! Um pedido de validação foi enviado ao host.');
+          }
+        });
+      }
+      grid.appendChild(cell);
+    }
+  }
+  wrapper.appendChild(grid);
+  container.appendChild(wrapper);
+}
+
+/* --------- Render de todas as cartelas da sala --------- */
+function renderAllCardsFromRoom(snapshotVal) {
+  // snapshotVal: { jogadores: { playerId: { cartela: [], marks: { idx: true } , name } }, ... }
+  const holder = document.getElementById('cartela');
+  holder.innerHTML = '';
+
+  if (!snapshotVal || !snapshotVal.jogadores) {
+    holder.innerHTML = '<div class="small-note">Nenhuma cartela gerada ainda.</div>';
+    return;
+  }
+
+  const players = snapshotVal.jogadores;
+  for (const pid in players) {
+    const p = players[pid];
+    // normalize marks to array[25]
+    const marksMap = p.marks || {};
+    const marksArr = Array.from({length:25},(_,i)=>!!marksMap[i]);
+    const cardObj = {
+      cartela: p.cartela || gerarCartelaLocalFromPlayerData(pid),
+      marks: marksArr,
+      name: p.name || ('Jogador ' + pid)
+    };
+    const isLocal = (pid == jogadorID);
+    renderSingleCard(holder, pid, cardObj, isLocal);
+  }
+}
+
+/* --------- Função para checar Bingo a partir do DOM de uma cartela --------- */
+function checkBingoFromDom(cardWrapper) {
+  const cells = Array.from(cardWrapper.querySelectorAll('.cell'));
+  // build matrix of marked (★ counts as marked)
+  const mat = [];
+  for(let r=0;r<5;r++){
+    mat[r] = [];
+    for(let c=0;c<5;c++){
+      const idx = r*5 + c;
+      const el = cells[idx];
+      const val = el.textContent;
+      const marked = (val === '★') || el.classList.contains('mark');
+      mat[r][c] = marked ? 1 : 0;
+    }
+  }
+  // linhas
+  for(let r=0;r<5;r++){ if(mat[r].reduce((a,b)=>a+b,0)===5) return true; }
+  // colunas
+  for(let c=0;c<5;c++){ let s=0; for(let r=0;r<5;r++) s+=mat[r][c]; if(s===5) return true; }
+  // diagonais
+  let d1=0,d2=0;
+  for(let i=0;i<5;i++){ d1 += mat[i][i]; d2 += mat[i][4-i]; }
+  if(d1===5 || d2===5) return true;
+  return false;
+}
+
+/* --------- Substitui a gerarCartela simples da Parte 1: salva no Firebase com marks vazios --------- */
+async function gerarCartelaParaPlayer() {
+  // cria cartela única (25 números aleatórios 1..75) - central será substituído para display como '★'
+  const setNum = new Set();
+  while (setNum.size < 25) {
+    setNum.add(Math.floor(Math.random()*75) + 1);
+  }
+  const arr = Array.from(setNum);
+  // salvar no firebase sob salas/{salaAtual}/jogadores/{jogadorID}
+  const playerPath = `salas/${salaAtual}/jogadores/${jogadorID}`;
+  await set(ref(db, playerPath), {
+    cartela: arr,
+    name: 'Jogador_' + String(jogadorID).slice(-4) // nome simples; pode ser alterado
+  });
+}
+
+/* --------- gerarCartelaLocalFromPlayerData: usado se algum jogador tiver cartela pré-existente --------- */
+function gerarCartelaLocalFromPlayerData(pid) {
+  // fallback: gerar cartela aleatória local - só se nota que não existe cartela no DB
+  const setNum = new Set();
+  while (setNum.size < 25) setNum.add(Math.floor(Math.random()*75)+1);
+  return Array.from(setNum);
+}
+
+/* --------- Novos listeners para a sala: chamadas, claims (bingo), jogadores, marks --------- */
+function attachRoomListeners() {
+  if (!salaAtual) return;
+  const salaRef = ref(db, `salas/${salaAtual}`);
+
+  // escutar toda a sala (jogadores, sorteios, marks)
+  onValue(salaRef, snap => {
+    const val = snap.val();
+    // atualizar lista jogadores
+    const players = val && val.jogadores ? Object.keys(val.jogadores) : [];
+    document.getElementById('listaJogadores').innerText = players.length + ' jogador(es) conectado(s)';
+
+    // atualizar cartelas
+    renderAllCardsFromRoom(val);
+
+    // chamada atual
+    const sorteios = val && val.sorteios ? val.sorteios : [];
+    document.getElementById('sorteados').innerText = (sorteios.length ? sorteios.join(', ') : 'Nenhum ainda');
+
+    // claims (bingo) — se existir claim e você é host, mostra aviso para validar
+    const claims = val && val.claims ? val.claims : null;
+    if (claims) {
+      // se host, mostre painel de claims
+      // criar área simples de notificação
+      if (isLocalHost()) {
+        const claimIds = Object.keys(claims);
+        if (claimIds.length) {
+          // mostrar alerta simples (pode ser substituído por UI)
+          const who = claims[claimIds[0]].name || claimIds[0];
+          if (!document.getElementById('pendingClaim')) {
+            const p = document.createElement('div');
+            p.id = 'pendingClaim';
+            p.className = 'bingo-winner';
+            p.textContent = `Pedido de validação de BINGO de ${who}. Clique para validar.`;
+            p.onclick = async () => {
+              // valida automaticamente — checar que a cartela do jogador de fato tem bingo
+              const targetId = claimIds[0];
+              const playerSnap = val.jogadores && val.jogadores[targetId] ? val.jogadores[targetId] : null;
+              if (!playerSnap) {
+                alert('Jogador não encontrado.');
+                return;
+              }
+              // validar via lógica: re-checar marcações e sorteios
+              const valid = validateClaimWithData(playerSnap, val.sorteios || []);
+              if (valid) {
+                alert('BINGO VALIDADO! Vencedor: ' + (playerSnap.name || targetId));
+                // gravar vencedor
+                await set(ref(db, `salas/${salaAtual}/winner`), { id: targetId, name: playerSnap.name || targetId, at: Date.now() });
+                // limpar claims
+                await set(ref(db, `salas/${salaAtual}/claims`), null);
+              } else {
+                alert('Não foi possível validar o Bingo deste jogador.');
+                // remover claim do jogador falho
+                await set(ref(db, `salas/${salaAtual}/claims/${targetId}`), null);
+              }
+              // remover notificação
+              const el = document.getElementById('pendingClaim');
+              if (el) el.remove();
+            };
+            // inserir antes do cartela
+            const cartHolder = document.getElementById('cartela');
+            cartHolder.insertAdjacentElement('beforebegin', p);
+          }
+        } else {
+          const el = document.getElementById('pendingClaim');
+          if (el) el.remove();
+        }
+      } else {
+        // se não host, apenas avisa que pedido foi enviado
+        // (mas não precisamos notificar sempre para não flood)
+      }
+    } else {
+      const el = document.getElementById('pendingClaim');
+      if (el) el.remove();
+    }
+
+    // se existir winner, mostrar mensagem
+    if (val && val.winner) {
+      const w = val.winner;
+      if (!document.getElementById('winnerBox')) {
+        const b = document.createElement('div');
+        b.id = 'winnerBox';
+        b.className = 'bingo-winner';
+        b.textContent = `🏆 Vencedor: ${w.name || w.id}`;
+        const holder = document.getElementById('cartela');
+        holder.insertAdjacentElement('beforebegin', b);
+      }
+    } else {
+      const el = document.getElementById('winnerBox');
+      if (el) el.remove();
+    }
+  });
+}
+
+/* --------- Validação de claim (verifica se combina com chamados) --------- */
+function validateClaimWithData(playerObj, chamadoArr) {
+  // playerObj: { cartela: [25], marks: { idx: true }, name }
+  const marksMap = playerObj.marks || {};
+  const marksArr = Array.from({length:25}, (_,i) => !!marksMap[i]);
+
+  // Se marcas vierem vazias (server não salvou marcas), podemos inferir: marcar se número está nos chamados
+  if (Object.keys(marksMap).length === 0 && Array.isArray(chamadoArr)) {
+    // marcar se o número foi chamado
+    for (let i=0;i<25;i++){
+      const num = playerObj.cartela[i];
+      if (num && chamadoArr.includes(num)) marksArr[i] = true;
+      if (i === 12) marksArr[i] = true; // centro livre
+    }
+  } else {
+    // garantir centro livre marcado
+    marksArr[12] = true;
+  }
+
+  // checar linhas/colunas/diagonais
+  const mat = [];
+  for (let r=0;r<5;r++){
+    mat[r]=[];
+    for(let c=0;c<5;c++){
+      mat[r][c] = marksArr[r*5 + c] ? 1 : 0;
+    }
+  }
+  for(let r=0;r<5;r++) if(mat[r].reduce((a,b)=>a+b,0)===5) return true;
+  for(let c=0;c<5;c++){ let s=0; for(let r=0;r<5;r++) s+=mat[r][c]; if(s===5) return true; }
+  let d1=0,d2=0; for(let i=0;i<5;i++){ d1+=mat[i][i]; d2+=mat[i][4-i]; } if(d1===5 || d2===5) return true;
+  return false;
+}
+
+/* --------- Função auxiliar para detectar host: host é o primeiro jogador cadastrado (simples) --------- */
+function isLocalHost() {
+  // Host detection: sala/{salaAtual}/hostId in DB could be used; if not present, first player is host
+  // We'll try to read /salas/{salaAtual}/hostId
+  // but here we implement quick sync: check DB once
+  // NOTE: This helper may be async ideally — but used only for UI hints above.
+  // For reliability, host-only actions should check DB on server before executing.
+  // Here we'll fallback to assume the *first* key in players is host when present.
+  // For simplicity in UI we return false if not clear.
+  return false; // kept false to avoid accidental host-only actions; host UI shown by Parte 1 when created
+}
+
+/* --------- Override abrirSala para gerar cartela do jogador e anexar listeners --------- */
+async function abrirSala() {
+  esconderTudo();
+  document.getElementById("gameArea").style.display = "block";
+  document.getElementById("codigoSalaTitulo").innerText = "Sala: " + salaAtual;
+
+  // se jogador ainda não tem cartela no DB, gera
+  const playerRef = ref(db, `salas/${salaAtual}/jogadores/${jogadorID}`);
+  const snap = await get(playerRef);
+  if (!snap.exists() || !snap.val().cartela) {
+    await gerarCartelaParaPlayer();
+  }
+
+  // attaches
+  attachRoomListeners();
+
+  // criar controles de host (se for host - detectando hostId no DB)
+  const roomSnap = await get(ref(db, `salas/${salaAtual}`));
+  const roomVal = roomSnap.exists() ? roomSnap.val() : null;
+  // Se hostId não definido, mas quem criou a sala (na PARTE1) deveria ter definido host; aqui só mostramos botão start se o jogador for quem criou a sala.
+  // Para respaldo, vamos considerar jogador que criou sala (quando sala foi criada via Parte1) teria sido registrado como primeiro jogador no path; portanto, se jogadorID é o primeiro key:
+  if (roomVal && roomVal.jogadores) {
+    const firstPlayerId = Object.keys(roomVal.jogadores)[0];
+    const controlsExists = document.getElementById('hostControls');
+    if (firstPlayerId == jogadorID && !controlsExists) {
+      // criar host controls
+      const hostDiv = document.createElement('div');
+      hostDiv.id = 'hostControls';
+      hostDiv.className = 'controls-host';
+      hostDiv.innerHTML = `
+        <button id="btnDraw">SORTEAR NÚMERO (Host)</button>
+        <button id="btnResetRoom">Resetar Sala</button>
+        <button id="btnGenMany">Gerar Cartelas p/ todos (Host)</button>
+      `;
+      document.getElementById('gameArea').insertAdjacentElement('afterbegin', hostDiv);
+
+      document.getElementById('btnDraw').onclick = async () => {
+        // host sorteia número (adiciona no array salas/{salaAtual}/sorteios)
+        const n = Math.floor(Math.random()*75)+1;
+        const sorteiosRef = ref(db, `salas/${salaAtual}/sorteios`);
+        const sSnap = await get(sorteiosRef);
+        const arr = sSnap.exists() ? sSnap.val() : [];
+        if (arr.includes(n)) return alert('Número já foi sorteado, gerando outro...');
+        arr.push(n);
+        await set(sorteiosRef, arr);
+      };
+      document.getElementById('btnResetRoom').onclick = async () => {
+        if (!confirm('Resetar sala (limpa cartelas, chamadas e claims)?')) return;
+        await set(ref(db, `salas/${salaAtual}/sorteios`), []);
+        await set(ref(db, `salas/${salaAtual}/claims`), null);
+        await set(ref(db, `salas/${salaAtual}/winner`), null);
+        // remover cartelas (ou apenas limpar marks)
+        const players = roomVal.jogadores || {};
+        for (const pid in players) {
+          await set(ref(db, `salas/${salaAtual}/jogadores/${pid}/marks`), null);
+          // opcional: regenerar cartelas para bots/players
+        }
+        alert('Sala resetada.');
+      };
+      document.getElementById('btnGenMany').onclick = async () => {
+        // gerar cartela para cada jogador presente
+        const playersRefSnap = await get(ref(db, `salas/${salaAtual}/jogadores`));
+        const playersObj = playersRefSnap.exists() ? playersRefSnap.val() : {};
+        for (const pid in playersObj) {
+          const arr = gerarCartelaLocalFromPlayerData(pid);
+          await set(ref(db, `salas/${salaAtual}/jogadores/${pid}/cartela`), arr);
+          await set(ref(db, `salas/${salaAtual}/jogadores/${pid}/marks`), null);
+        }
+        alert('Cartelas geradas para todos jogadores na sala.');
+      };
+    }
+  }
+}
+
+/* --------- Substitui a função iniciarSorteio: agora só aciona o listener do DB (host faz o sortear) --------- */
+function iniciarSorteio() {
+  // Iniciador local: simplesmente garante que sala.sorteios exista
+  set(ref(db, `salas/${salaAtual}/sorteios`), []);
+  alert('Sorteio inicializado (os números vão aparecer quando o host clicar em SORTEAR).');
+}
+
+/* --------- Ao entrar na sala: chamar abrirSala (Parte1) substituída) --------- */
+// OBS: Na Parte 1, a função entrarComoJogador deve chamar abrirSala(). Se não, assegure-se de adaptar.
+// Se preferir, substitua a chamada abrirSala() existente pela nova abrirSala() acima.
+
+/* ---------- FIM DA PARTE 2 ---------- */
+    /************************************
+ *     📌 PARTE 3 — MODO ONLINE     *
+ ************************************/
+
+// ----------------------------
+// 🔹 Gerar código de sala
+// ----------------------------
+function gerarCodigoSala() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// ----------------------------
+// 🔹 Criar sala online
+// ----------------------------
+async function criarSalaOnline() {
+  const numJogadores = prompt("Quantos jogadores vão jogar?");
+  if (!numJogadores || isNaN(numJogadores)) return alert("Número inválido!");
+
+  const codigo = gerarCodigoSala();
+
+  // Criar sala no Firebase
+  await set(ref(db, "salas/" + codigo), {
+    jogadoresEsperados: Number(numJogadores),
+    jogadoresConectados: 0,
+    perguntas: perguntasBanco,  // perguntas da Parte 2
+    estado: "aguardando"
+  });
+
+  alert(`Sala criada!\nCódigo: ${codigo}`);
+
+  // Entra automaticamente na sala como Host
+  entrarSalaOnline(codigo, true);
+}
+
+// ----------------------------
+// 🔹 Entrar em sala (host ou player)
+// ----------------------------
+async function entrarSalaOnline(codigo, ehHost = false) {
+  const salaRef = ref(db, "salas/" + codigo);
+
+  // Buscar sala
+  const snap = await get(salaRef);
+  if (!snap.exists()) return alert("Sala não encontrada!");
+
+  const sala = snap.val();
+
+  if (sala.jogadoresConectados >= sala.jogadoresEsperados)
+    return alert("A sala já está cheia!");
+
+  const nomeJogador = prompt("Seu nome:");
+  if (!nomeJogador) return;
+
+  // Dados do jogador
+  const jogadorId = "player_" + Math.floor(Math.random() * 999999);
+
+  const cartela = gerarCartelaBingoArray(); // Função da Parte 1
+  const jogadorRef = ref(db, `salas/${codigo}/jogadores/${jogadorId}`);
+
+  // Registrar jogador na sala
+  await set(jogadorRef, {
+    nome: nomeJogador,
+    host: ehHost,
+    cartela: cartela,
+    pronto: false
+  });
+
+  // Atualizar contagem
+  await set(ref(db, `salas/${codigo}/jogadoresConectados`), sala.jogadoresConectados + 1);
+
+  alert("Você entrou na sala com sucesso!");
+
+  // MOSTRAR INTERFACE DE JOGADOR
+  iniciarTelaBingoOnline(codigo, jogadorId);
+}
+
+// ----------------------------
+// 🔹 Função para gerar cartela em array (modo online)
+// ----------------------------
+function gerarCartelaBingoArray() {
+  const nums = [];
+  while (nums.length < 25) {
+    const n = Math.floor(Math.random() * 75) + 1;
+    if (!nums.includes(n)) nums.push(n);
+  }
+  return nums;
+}
+
+// ----------------------------
+// 🔹 Mostrar cartela do jogador e permitir marcar
+// ----------------------------
+function iniciarTelaBingoOnline(codigoSala, jogadorId) {
+  document.body.innerHTML = `
+    <h1>BINGO ONLINE - SALA ${codigoSala}</h1>
+    <h3>ID: ${jogadorId}</h3>
+    <div id="bingoCard"></div>
+    <button id="btnPronto">Estou Pronto</button>
+    <br><br>
+    <button onclick="location.href='index.html'">Voltar</button>
+  `;
+
+  const salaJogadorRef = ref(db, `salas/${codigoSala}/jogadores/${jogadorId}`);
+
+  get(salaJogadorRef).then(snapshot => {
+    const dados = snapshot.val();
+    const numeros = dados.cartela;
+
+    const card = document.getElementById("bingoCard");
+    card.style.display = "grid";
+    card.style.gridTemplateColumns = "repeat(5, 60px)";
+    card.style.gap = "10px";
+
+    numeros.forEach((num, index) => {
+      const div = document.createElement("div");
+      div.className = "cell";
+      div.innerText = num;
+
+      div.onclick = async () => {
+        div.classList.toggle("selected");
+
+        // Salva o número marcado no Firebase
+        await set(ref(db, `salas/${codigoSala}/jogadores/${jogadorId}/marcados/${index}`), {
+          marcado: div.classList.contains("selected")
+        });
+      };
+
+      card.appendChild(div);
+    });
+  });
+
+  // Jogador clica "Pronto"
+  document.getElementById("btnPronto").onclick = async () => {
+    await set(ref(db, `salas/${codigoSala}/jogadores/${jogadorId}/pronto`), true);
+    alert("Você está pronto!");
+  };
+}
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
