@@ -1,509 +1,253 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Bingo Escolar — Trabalho</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bingo — Modo Online / Offline</title>
+
 <style>
-  :root{--accent:#2b8cff;--bg:#0f1724;--card:#ffffff;--muted:#9aa4b2}
-  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; margin:0;background:linear-gradient(180deg,#071028,#0b1530);color:#eaf2ff}
-  .container{max-width:1100px;margin:24px auto;padding:18px}
-  header{display:flex;gap:12px;align-items:center;justify-content:space-between}
-  h1{margin:0;font-size:1.25rem}
-  .btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-  .outline{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px 12px;border-radius:8px;color:#eaf2ff}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  main{margin-top:18px}
-  .mode-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  .panel{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px}
-  input[type="number"], input[type="text"], select, textarea{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-  .grid-cards{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
-  .card{background:var(--card);color:#072033;padding:8px;border-radius:8px;min-width:200px}
-  .bingo-grid{display:grid;grid-template-columns:repeat(5,44px);gap:6px}
-  .cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-weight:700;cursor:pointer;background:#f3f6f8}
-  .cell.mark{background:#2b8cff;color:white}
-  .calledList{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow:auto;padding:6px;background:rgba(255,255,255,0.02);border-radius:8px}
-  .called{padding:6px;border-radius:6px;background:rgba(255,255,255,0.03)}
-  .roleta{height:220px;display:flex;align-items:center;justify-content:center}
-  .spinner{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:8px solid rgba(255,255,255,0.04)}
-  .spin-btn{margin-top:12px}
-  footer{margin-top:18px;color:var(--muted)}
-  .small{font-size:0.85rem;color:var(--muted)}
-  .top-actions{display:flex;gap:8px}
-  .danger{background:#e85a6f}
-  .flex{display:flex;gap:8px;align-items:center}
-  .room-info{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  textarea{min-height:100px;width:100%}
-  .instructions{font-size:0.86rem;color:var(--muted)}
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .menu, .onlineMenu, .gameArea, .offlineArea {
+        display: none;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 18px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 18px;
+    }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div>
-      <h1>Bingo — Trabalho (Português)</h1>
-      <div class="small">Criado para jogo em sala (online) + roleta de perguntas (offline).</div>
-    </div>
-    <div class="top-actions">
-      <a href="index.html"><button class="outline">Voltar → Index</button></a>
-      <a href="creditos.html"><button class="outline">Créditos</button></a>
-    </div>
-  </header>
 
-  <main>
-    <!-- MODO -->
-    <div class="panel">
-      <div class="mode-row">
-        <button id="btnOnline" class="btn">Modo Online</button>
-        <button id="btnRoleta" class="btn">Modo Roleta</button>
-        <div class="instructions">Escolha um modo. No Online você cria/sala/joga com outras pessoas (requer Firebase). No Offline a roleta sorteia perguntas.</div>
-      </div>
-    </div>
+<h1>Bingo Escolar</h1>
 
-    <!-- AREAS -->
-    <section id="areaOnline" style="display:none;margin-top:12px">
-      <div class="panel">
-        <h3>Modo Online</h3>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div style="min-width:260px">
-            <label class="small">Seu nome (aparecerá para outros):</label><br>
-            <input id="playerName" placeholder="Seu nome" type="text" value="Jogador" />
-          </div>
-          <div>
-            <label class="small">Quantos jogadores/cartelas?</label><br>
-            <input id="playersCount" type="number" min="1" placeholder="Ex: 4" value="4"/>
-          </div>
-          <div>
-            <label class="small">&nbsp;</label><br>
-            <button id="createRoomBtn" class="btn">Criar Sala</button>
-          </div>
-
-          <div>
-            <label class="small">Entrar com código (6 dígitos)</label><br>
-            <input id="joinCode" placeholder="123456" type="text" maxlength="6"/>
-            <button id="joinBtn" class="outline">Entrar</button>
-          </div>
-        </div>
-
-        <hr style="margin:12px 0" />
-
-        <div id="roomPanel" style="display:none">
-          <div class="room-info">
-            <div class="panel" style="padding:8px">
-              <div>Room code: <strong id="roomCodeDisplay"></strong></div>
-              <div>Host: <span id="hostName"></span></div>
-              <div>Jogadores: <span id="playersList"></span></div>
-            </div>
-
-            <div style="flex:1">
-              <label class="small">Banco de perguntas (pode editar):</label>
-              <textarea id="questionBank"></textarea>
-              <div style="display:flex;gap:8px;margin-top:6px">
-                <button id="saveQuestionsBtn" class="btn">Salvar perguntas</button>
-                <button id="loadDefaultBtn" class="outline">Carregar padrão</button>
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
-            <button id="genCardsBtn" class="btn">Gerar Cartelas (host)</button>
-            <button id="startDrawBtn" class="btn">Começar Sorteio (host)</button>
-            <button id="drawNumberBtn" class="btn" style="display:none">SORTEAR NÚMERO</button>
-            <button id="resetRoomBtn" class="outline">Resetar sala</button>
-            <div class="small">Chamados: <span id="calledCount">0</span></div>
-          </div>
-
-          <div style="margin-top:12px">
-            <div class="calledList" id="calledList"></div>
-          </div>
-
-          <div style="margin-top:12px">
-            <h4>Cartelas</h4>
-            <div id="cardsHolder" class="grid-cards"></div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section id="areaRoleta" style="display:none;margin-top:12px">
-      <div class="panel">
-        <h3>Modo Roleta (Perguntas)</h3>
-        <div class="roleta">
-          <div class="spinner panel" id="spinner">
-            <div id="currentQuestion" style="padding:12px;text-align:center">Clique em girar</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button id="spinBtn" class="btn spin-btn">Girar Roleta</button>
-          <button id="nextQBtn" class="outline">Próxima</button>
-          <button id="shuffleBank" class="outline">Embaralhar perguntas</button>
-        </div>
-
-        <div style="margin-top:12px">
-          <label class="small">Editar banco de perguntas (cada pergunta em nova linha):</label>
-          <textarea id="offlineQuestions"></textarea>
-          <div style="display:flex;gap:8px;margin-top:6px">
-            <button id="saveOffline" class="btn">Salvar</button>
-            <button id="loadOfflineDefault" class="outline">Carregar padrão</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer>
-      <div class="small">Dicas: Para usar MODO ONLINE entre computadores, crie um projeto no Firebase e cole as credenciais no topo do arquivo. O host deve gerar as cartelas e iniciar o sorteio.</div>
-    </footer>
-  </main>
+<!-- ------------ MENU PRINCIPAL ------------ -->
+<div id="menu" class="menu" style="display:block;">
+    <button onclick="abrirOnline()">Modo Online</button>
+    <button onclick="abrirOffline()">Modo Roleta (Offline)</button>
+    <br><br>
+    <a href="index.html"><button>Voltar para Index</button></a>
+    <a href="creditos.html"><button>Créditos</button></a>
 </div>
 
-<script>
-/*
-  INSTRUÇÕES IMPORTANTES:
-  - Para Modo Online real entre dispositivos, crie um projeto no Firebase (Realtime Database)
-    e cole sua configuração JS abaixo no objeto firebaseConfig.
-  - Se não colar a config, o sistema continuará funcionando em modo LOCAL (simulação),
-    mas não terá sincronização entre navegadores.
-*/
+<!-- ------------ MENU ONLINE ------------ -->
+<div id="onlineMenu" class="onlineMenu">
+    <h2>Modo Online</h2>
+    <button onclick="criarSala()">Criar Sala</button><br>
 
-/* ========== CONFIGURE AQUI (COLE SUA CONFIG DO FIREBASE) ========== */
-const useFirebase = true; // coloque false se quiser só offline/local
-const firebaseConfig = {
-  /* EXEMPLO:
-  apiKey: "AIzaSyAnbQm4xGjuGuV2kRilvod8wk7lrknXYbg",
-  authDomain: "bingo-2923d.firebaseapp.com",
-  databaseURL: "https://bingo-2923d-default-rtdb.firebaseio.com/",
-  projectId: "bingo-2923d",
-  storageBucket: "bingo-2923d.firebasestorage.app",
-  messagingSenderId: "641887131012",
-  appId: "1:641887131012:web:0b932028f09ed0f62179d1"
-  */
-};
-/* ================================================================== */
+    <h3>Entrar em sala existente:</h3>
+    <input id="codigoInput" maxlength="6" placeholder="Código da sala"><br>
+    <button onclick="entrarSala()">Entrar</button><br><br>
 
-/* ---------- firebase init (modular v9 via CDN) ---------- */
-let db = null;
-if (useFirebase && firebaseConfig && firebaseConfig.apiKey) {
-  // Carregar SDKs dinamicamente:
-  (async function loadFirebase(){
-    const script1 = document.createElement('script');
-    script1.src = 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js';
-    document.head.appendChild(script1);
-    const script2 = document.createElement('script');
-    script2.src = 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js';
-    document.head.appendChild(script2);
-    await new Promise(r => script2.onload = r);
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-      console.log('Firebase conectado (compat).');
-    } catch(e){ console.warn('Erro init firebase',e); db = null; }
-  })();
-} else {
-  console.log('Firebase não configurado. Modo local/simulação.');
-}
+    <button onclick="voltarMenu()">Voltar</button>
+</div>
 
-/* ---------- UTILIDADES ---------- */
-function makeRoomCode() {
-  return Math.floor(100000 + Math.random()*900000).toString();
-}
-function uid(){ return 'u'+Math.random().toString(36).slice(2,9); }
+<!-- ------------ ÁREA DE JOGO ONLINE ------------ -->
+<div id="gameArea" class="gameArea">
+    <h2 id="codigoSalaTitulo"></h2>
+    <p>Jogadores na sala:</p>
+    <p id="listaJogadores">Carregando...</p>
 
-/* ---------- DOM ---------- */
-const btnOnline = document.getElementById('btnOnline');
-const btnRoleta = document.getElementById('btnRoleta');
-const areaOnline = document.getElementById('areaOnline');
-const areaRoleta = document.getElementById('areaRoleta');
-const createRoomBtn = document.getElementById('createRoomBtn');
-const joinBtn = document.getElementById('joinBtn');
-const joinCode = document.getElementById('joinCode');
-const playersCount = document.getElementById('playersCount');
-const playerName = document.getElementById('playerName');
-const roomPanel = document.getElementById('roomPanel');
-const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-const hostName = document.getElementById('hostName');
-const playersList = document.getElementById('playersList');
-const genCardsBtn = document.getElementById('genCardsBtn');
-const cardsHolder = document.getElementById('cardsHolder');
-const calledList = document.getElementById('calledList');
-const drawNumberBtn = document.getElementById('drawNumberBtn');
-const startDrawBtn = document.getElementById('startDrawBtn');
-const calledCount = document.getElementById('calledCount');
-const resetRoomBtn = document.getElementById('resetRoomBtn');
-const questionBank = document.getElementById('questionBank');
-const saveQuestionsBtn = document.getElementById('saveQuestionsBtn');
-const loadDefaultBtn = document.getElementById('loadDefaultBtn');
+    <button onclick="iniciarSorteio()">Iniciar Sorteio</button>
+    <button onclick="sairSala()">Sair da Sala</button>
 
-const spinner = document.getElementById('spinner');
-const currentQuestion = document.getElementById('currentQuestion');
-const spinBtn = document.getElementById('spinBtn');
-const nextQBtn = document.getElementById('nextQBtn');
-const offlineQuestions = document.getElementById('offlineQuestions');
-const saveOffline = document.getElementById('saveOffline');
-const loadOfflineDefault = document.getElementById('loadOfflineDefault');
-const shuffleBank = document.getElementById('shuffleBank');
+    <h3>Sua Cartela:</h3>
+    <div id="cartela"></div>
 
-/* ---------- Dados locais ---------- */
-let localState = {
-  roomCode: null,
-  roomId: null, // in firebase: rooms/{roomCode}
-  isHost: false,
-  playerId: uid(),
-  cards: {}, // {playerId: cardData}
-  called: [],
-  players: {},
-  questions: []
-};
+    <h3>Números sorteados:</h3>
+    <p id="sorteados">Nenhum ainda</p>
+</div>
 
-const defaultQuestions = [
-`Quem é Rayyan Arkan Dikha?`,
-`Onde aconteceu o festival em que Rayyan dançou?`,
-`Qual a idade de Rayyan?`,
-`Quando Rayyan nasceu?`,
-`Por que o vídeo de Rayyan viralizou?`,
-`Que termo foi usado para descrever a "aura" de Rayyan?`,
-`Quais influenciadores recriaram a dança de Rayyan?`,
-`Que sonho Rayyan mencionou ter?`,
-`Qual evento no Roblox reproduziu a dança?`,
-`Quem escreveu o trabalho de Português? (Matheus Máximo e Marcos Guilherme)`
-];
+<!-- ------------ MODO OFFLINE ------------ -->
+<div id="offlineArea" class="offlineArea">
+    <h2>Roleta Offline</h2>
+    <button onclick="sortearPergunta()">Sortear Pergunta</button>
+    <p id="pergunta"></p>
 
-/* ---------- Helpers bingo generation ---------- */
-function generateCard() {
-  // 5x5 BINGO clássico: colunas B(1-15) I(16-30) N(31-45) G(46-60) O(61-75)
-  function pick(rangeStart) {
-    const arr = [];
-    for(let i=0;i<15;i++) arr.push(rangeStart+i);
-    // shuffle
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]]=[arr[j],arr[i]];
-    }
-    return arr.slice(0,5);
-  }
-  const card = [];
-  const cols = [pick(1), pick(16), pick(31), pick(46), pick(61)];
-  for(let r=0;r<5;r++){
-    const row=[];
-    for(let c=0;c<5;c++){
-      row.push(cols[c][r]);
-    }
-    card.push(row);
-  }
-  // centro livre
-  card[2][2] = '★';
-  return card;
-}
-function renderCardElement(cardData, ownerId) {
-  const wrapper = document.createElement('div');
-  wrapper.className='card panel';
-  wrapper.dataset.owner = ownerId;
-  const title = document.createElement('div');
-  title.innerHTML = `<div style="font-weight:700;margin-bottom:6px">Cartela — ${ownerId===localState.playerId ? 'Minha' : 'Jogador'}</div>`;
-  wrapper.appendChild(title);
+    <br>
+    <button onclick="voltarMenu()">Voltar</button>
+</div>
 
-  const grid = document.createElement('div');
-  grid.className='bingo-grid';
-  for(let r=0;r<5;r++){
-    for(let c=0;c<5;c++){
-      const cell = document.createElement('div');
-      cell.className='cell';
-      const val = cardData[r][c];
-      cell.textContent = val;
-      // marca se foi chamado
-      cell.dataset.r = r; cell.dataset.c = c;
-      if(val==='★'){ cell.classList.add('mark'); cell.dataset.marked = '1'; }
-      cell.onclick = () => {
-        // só permite marcar se for sua cartela (no online, clients marcam localmente; host pode ver)
-        if(ownerId !== localState.playerId && localState.isHost===false){ 
-          // nos jogos online, permitir marcação própria; se quiser, host pode marcar qualquer
-          if(!confirm('Marcar esta cartela localmente? (você só pode marcar sua própria cartela)')) return;
-        }
-        if(cell.dataset.marked==='1'){ cell.dataset.marked='0'; cell.classList.remove('mark'); }
-        else { cell.dataset.marked='1'; cell.classList.add('mark'); }
-        // opcional: verificar bingo
-        if(checkBingo(wrapper)) {
-          alert('BINGO! Peça ao host validar sua cartela (ou se você é host, valide).');
-        }
-      };
-      grid.appendChild(cell);
-    }
-  }
-  wrapper.appendChild(grid);
-  return wrapper;
-}
-function checkBingo(cardWrapper) {
-  // verifica linhas, colunas e diagonais
-  const cells = Array.from(cardWrapper.querySelectorAll('.cell'));
-  // build matrix of marked
-  const mat = [];
-  for(let r=0;r<5;r++){
-    mat[r]=[];
-    for(let c=0;c<5;c++){
-      const idx = r*5 + c;
-      const marked = cells[idx].dataset.marked==='1' ? 1:0;
-      mat[r][c]=marked;
-    }
-  }
-  // linhas
-  for(let r=0;r<5;r++){ if(mat[r].reduce((a,b)=>a+b,0)===5) return true; }
-  // colunas
-  for(let c=0;c<5;c++){
-    let s=0; for(let r=0;r<5;r++) s+=mat[r][c];
-    if(s===5) return true;
-  }
-  // diag
-  let d1=0,d2=0;
-  for(let i=0;i<5;i++){ d1+=mat[i][i]; d2+=mat[i][4-i]; }
-  if(d1===5 || d2===5) return true;
-  return false;
-}
+<!-- ======================= FIREBASE ======================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getDatabase, ref, get, set, update, push, onValue, remove }
+        from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
 
-/* ---------- Online room logic (simplified) ---------- */
-async function createRoom() {
-  const count = parseInt(playersCount.value) || 1;
-  const name = playerName.value || 'Jogador';
-  localState.playerId = uid();
-  localState.players[localState.playerId] = {name};
-  localState.isHost = true;
-  const code = makeRoomCode();
-  localState.roomCode = code;
-  roomCodeDisplay.textContent = code;
-  hostName.textContent = name + ' (host)';
-  updatePlayersListDisplay();
-  roomPanel.style.display='block';
-  // init room on firebase if possible
-  if(db){
-    const roomRef = db.ref('rooms/'+code);
-    await roomRef.set({
-      hostId: localState.playerId,
-      hostName: name,
-      createdAt: Date.now(),
-      players: { [localState.playerId]: {name, id: localState.playerId} },
-      countExpected: count,
-      cards: {},
-      called: [],
-      started: false
-    });
-    localState.roomId = 'rooms/'+code;
-    // listen to room updates
-    roomRef.on('value', snapshot => {
-      const val = snapshot.val();
-      if(!val) return;
-      // sync players
-      localState.players = val.players || {};
-      updatePlayersListDisplay();
-      // sync called
-      localState.called = val.called || [];
-      renderCalledList();
-      // sync cards
-      if(val.cards) {
-        localState.cards = val.cards;
-        renderAllCards();
-      }
-      if(val.started) {
-        drawNumberBtn.style.display='inline-block';
-      } else {
-        drawNumberBtn.style.display='none';
-      }
-    });
-  } else {
-    // local-only: just show room local
-    localState.roomId = null;
-    drawNumberBtn.style.display='none';
-  }
-}
-async function joinRoom() {
-  const code = joinCode.value.trim();
-  if(!code) return alert('Coloque o código da sala.');
-  const name = playerName.value || 'Jogador';
-  localState.playerId = uid();
-  localState.isHost = false;
-  localState.roomCode = code;
-  roomCodeDisplay.textContent = code;
-  hostName.textContent = '(não conhecido)';
-  roomPanel.style.display='block';
-  if(db){
-    const roomRef = db.ref('rooms/'+code);
-    const snap = await roomRef.once('value');
-    if(!snap.exists()) return alert('Sala não encontrada.');
-    // add player
-    const playersRef = roomRef.child('players/'+localState.playerId);
-    await playersRef.set({id:localState.playerId, name});
-    localState.roomId = 'rooms/'+code;
-    // listen
-    roomRef.on('value', snapshot => {
-      const val = snapshot.val();
-      if(!val) return;
-      hostName.textContent = (val.hostName||'') + (val.hostId===localState.playerId ? ' (host)' : '');
-      localState.players = val.players || {};
-      updatePlayersListDisplay();
-      localState.called = val.called || [];
-      renderCalledList();
-      if(val.cards) { localState.cards = val.cards; renderAllCards(); }
-      if(val.started) drawNumberBtn.style.display='inline-block';
-    });
-  } else {
-    alert('Modo local: sala simulada no navegador (não há sincronização).');
-    localState.players[localState.playerId] = {id:localState.playerId, name};
-    updatePlayersListDisplay();
-  }
-}
-
-function updatePlayersListDisplay(){
-  playersList.textContent = Object.values(localState.players || {}).map(p=>p.name || p.id).join(', ');
-}
-
-/* ---------- gerar cartelas ---------- */
-async function generateCardsForRoom() {
-  if(!localState.isHost) return alert('Apenas o host pode gerar cartelas.');
-  const count = parseInt(playersCount.value) || 1;
-  const cards = {};
-  // gerar 'count' cartelas
-  for(let i=0;i<count;i++){
-    const pid = 'p'+(i+1);
-    cards[pid] = {
-      owner: pid,
-      card: generateCard()
+    const firebaseConfig = {
+        apiKey: "AIzaSyAnbQm4xGjuGuV2kRilvod8wk7lrknXYbg",
+        authDomain: "bingo-2923d.firebaseapp.com",
+        databaseURL: "https://bingo-2923d-default-rtdb.firebaseio.com/",
+        projectId: "bingo-2923d",
+        storageBucket: "bingo-2923d.firebasestorage.app",
+        messagingSenderId: "641887131012",
+        appId: "1:641887131012:web:0b932028f09ed0f62179d1"
     };
-  }
-  // se estiver com players reais no room, distribui por playerId
-  const realPlayers = Object.keys(localState.players||{});
-  if(realPlayers.length>0){
-    // gerar uma cartela para cada jogador atual até count
-    let idx=0;
-    for(const pId of realPlayers){
-      cards[pId] = { owner: pId, card: generateCard() };
-      idx++;
-      if(idx>=count) break;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let salaAtual = null;
+    let jogadorID = Math.floor(Math.random()*999999999);
+
+    // ------------------- TELAS -------------------
+    function abrirOnline() {
+        esconderTudo();
+        document.getElementById("onlineMenu").style.display = "block";
     }
-    // se count maior que realPlayers, cria cartelas adicionais pX
-    for(let i=realPlayers.length;i<count;i++){
-      const pid = 'bot'+(i+1);
-      cards[pid] = { owner: pid, card: generateCard() };
+
+    function abrirOffline() {
+        esconderTudo();
+        document.getElementById("offlineArea").style.display = "block";
     }
-  }
 
-  localState.cards = cards;
-  renderAllCards();
-  // salvar no firebase
-  if(db && localState.roomCode){
-    const roomRef = db.ref('rooms/'+localState.roomCode);
-    await roomRef.update({ cards, started: false, called: [] });
-    alert('Cartelas geradas e salvas na sala.');
-  } else {
-    alert('Cartelas geradas localmente (sem Firebase).');
-  }
-}
+    function voltarMenu() {
+        esconderTudo();
+        document.getElementById("menu").style.display = "block";
+    }
 
-/* ---------- render ---------- */
-function renderAllCards(){
-  cardsHolder.innerHTML='';
-  for(const ownerId in localState.cards){
-    const cd = localState.cards[ownerId].card || localState.cards[ownerId];
-    const el = renderCardElement(cd, ownerId);
-    cardsHolder.appendChild(el);
-  }
-}
+    function esconderTudo() {
+        document.querySelectorAll(".menu, .onlineMenu, .gameArea, .offlineArea")
+            .forEach(e => e.style.display = "none");
+    }
 
-/* ---------- chamada de 
+    // ------------------- CRIAR SALA -------------------
+    function criarCodigoSala() {
+        return Math.floor(100000 + Math.random()*900000).toString();
+    }
+
+    async function criarSala() {
+        const codigo = criarCodigoSala();
+        salaAtual = codigo;
+
+        const salaRef = ref(db, "salas/" + codigo);
+
+        await set(salaRef, {
+            jogadores: {},
+            sorteios: []
+        });
+
+        entrarComoJogador();
+    }
+
+    // ------------------- ENTRAR EM SALA -------------------
+    async function entrarSala() {
+        const codigo = document.getElementById("codigoInput").value;
+
+        if (codigo.length !== 6) {
+            alert("Código deve ter 6 dígitos.");
+            return;
+        }
+
+        const salaRef = ref(db, "salas/" + codigo);
+        const snap = await get(salaRef);
+
+        if (!snap.exists()) {
+            alert("Sala não encontrada.");
+            return;
+        }
+
+        salaAtual = codigo;
+        entrarComoJogador();
+    }
+
+    // ------------------- REGISTRA JOGADOR -------------------
+    async function entrarComoJogador() {
+        const jogadorRef = ref(db, `salas/${salaAtual}/jogadores/${jogadorID}`);
+        await set(jogadorRef, {
+            cartela: gerarCartela(),
+        });
+
+        abrirSala();
+        atualizarListaJogadores();
+        sincronizarSorteio();
+    }
+
+    // ------------------- MOSTRAR TELA DA SALA -------------------
+    function abrirSala() {
+        esconderTudo();
+        document.getElementById("gameArea").style.display = "block";
+        document.getElementById("codigoSalaTitulo").innerText = "Sala: " + salaAtual;
+    }
+
+    // ------------------- LISTA DE JOGADORES -------------------
+    function atualizarListaJogadores() {
+        const jogadoresRef = ref(db, `salas/${salaAtual}/jogadores`);
+
+        onValue(jogadoresRef, snap => {
+            if (!snap.exists()) return;
+
+            const dados = snap.val();
+            const nomes = Object.keys(dados);
+
+            document.getElementById("listaJogadores").innerText =
+                nomes.length + " jogador(es) conectado(s)";
+        });
+    }
+
+    // ------------------- GERAR CARTELA -------------------
+    function gerarCartela() {
+        const setNum = new Set();
+        while (setNum.size < 25) {
+            setNum.add(Math.floor(Math.random()*75)+1);
+        }
+        return Array.from(setNum);
+    }
+
+    // ------------------- SORTEAR NÚMEROS -------------------
+    async function iniciarSorteio() {
+        const n = Math.floor(Math.random()*75)+1;
+        const atual = ref(db, `salas/${salaAtual}/sorteios`);
+
+        const snap = await get(atual);
+        let arr = snap.exists() ? snap.val() : [];
+
+        if (arr.includes(n)) return iniciarSorteio(); // evitar repetição
+
+        arr.push(n);
+        await set(atual, arr);
+    }
+
+    // ------------------- SINCRONIZAR SORTEIO -------------------
+    function sincronizarSorteio() {
+        const sorteiosRef = ref(db, `salas/${salaAtual}/sorteios`);
+
+        onValue(sorteiosRef, snap => {
+            if (!snap.exists()) return;
+
+            const arr = snap.val();
+            document.getElementById("sorteados").innerText = arr.join(", ");
+        });
+    }
+
+    // ------------------- SAIR DA SALA -------------------
+    async function sairSala() {
+        await remove(ref(db, `salas/${salaAtual}/jogadores/${jogadorID}`));
+        salaAtual = null;
+        voltarMenu();
+    }
+
+    // ------------------- ROLETAA OFFLINE (FUNCIONA DEPOIS) -------------------
+    function sortearPergunta() {
+        document.getElementById("pergunta").innerText = 
+            "As perguntas serão adicionadas na PARTE 3!";
+    }
+
+</script>
+
+</body>
+</html>
