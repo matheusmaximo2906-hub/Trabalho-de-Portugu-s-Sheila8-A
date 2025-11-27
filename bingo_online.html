@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bingo Online</title>
+</head>
+<body>
+
+<h1>MODO ONLINE</h1>
+
+<button onclick="criarSalaOnline()">Criar Sala</button>
+<br><br>
+<button onclick="entrarSalaCodigo()">Entrar em Sala</button>
+<br><br>
+<button onclick="location.href='index.html'">Voltar</button>
+
+<script type="module">
+
+/* 🔥 AQUI VOCÊ COLA TODA A PARTE 1 + PARTES 2 + PARTE 3 */ 
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAnbQm4xGjuGuV2kRilvod8wk7lrknXYbg",
+  authDomain: "bingo-2923d.firebaseapp.com",
+  databaseURL: "https://bingo-2923d-default-rtdb.firebaseio.com/",
+  projectId: "bingo-2923d",
+  storageBucket: "bingo-2923d.firebasestorage.app",
+  messagingSenderId: "641887131012",
+  appId: "1:641887131012:web:0b932028f09ed0f62179d1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Função para entrar digitando o código
+function entrarSalaCodigo() {
+  const codigo = prompt("Digite o código da sala:");
+  if (codigo) entrarSalaOnline(codigo);
+}
+
+</script>
+
+</body>
+</html>
